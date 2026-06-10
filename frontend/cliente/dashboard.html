@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Conta — JL Barbearia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --preto:#0A0A0A; --preto-card:#111111; --preto-borda:#1E1E1E;
+      --dourado:#C9A84C; --dourado-claro:#E2C06A; --branco:#F5F0E8;
+      --cinza:#888888; --cinza-claro:#CCCCCC; --verde:#4CAF7D;
+      --vermelho:#e57373; --amarelo:#FFB74D;
+      --fonte-display:'Cormorant Garamond',serif; --fonte-body:'Outfit',sans-serif;
+      --sidebar-w:260px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--preto);color:var(--branco);font-family:var(--fonte-body);min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{
+      position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+      background:var(--preto-card);border-right:1px solid var(--preto-borda);
+      display:flex;flex-direction:column;padding:2rem 0;z-index:100;overflow-y:auto;
+    }
+    .sidebar-logo{
+      font-family:var(--fonte-display);font-size:1.3rem;font-weight:600;
+      color:var(--branco);text-decoration:none;display:flex;align-items:center;
+      gap:.6rem;padding:0 1.8rem 2rem;border-bottom:1px solid var(--preto-borda);margin-bottom:1.5rem;
+    }
+    .sidebar-logo span{color:var(--dourado);}
+    .sidebar-logo i{color:var(--dourado);font-size:1rem;}
+    .sidebar-perfil{padding:0 1.8rem 1.5rem;border-bottom:1px solid var(--preto-borda);margin-bottom:1.5rem;}
+    .sidebar-avatar{
+      width:48px;height:48px;border-radius:50%;
+      background:linear-gradient(135deg,var(--preto-borda),#222);
+      border:1px solid rgba(201,168,76,.3);
+      display:flex;align-items:center;justify-content:center;margin-bottom:.75rem;
+    }
+    .sidebar-avatar i{color:var(--dourado);font-size:1.2rem;opacity:.8;}
+    .sidebar-nome{font-size:.9rem;font-weight:500;color:var(--branco);margin-bottom:.2rem;}
+    .sidebar-tipo{font-size:.68rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--dourado);}
+    .sidebar-menu{flex:1;padding:0 1rem;}
+    .menu-label{font-size:.6rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--cinza);padding:0 .8rem;margin-bottom:.5rem;margin-top:1rem;}
+    .menu-item{
+      display:flex;align-items:center;gap:.75rem;padding:.75rem .8rem;
+      text-decoration:none;font-size:.82rem;font-weight:400;color:var(--cinza);
+      transition:all .3s;cursor:pointer;background:none;border:none;
+      width:100%;text-align:left;font-family:var(--fonte-body);border-radius:2px;
+    }
+    .menu-item i{font-size:.85rem;width:16px;text-align:center;}
+    .menu-item:hover{color:var(--branco);background:rgba(255,255,255,.04);}
+    .menu-item.ativo{color:var(--dourado);background:rgba(201,168,76,.08);border-left:2px solid var(--dourado);}
+    .menu-badge{
+      margin-left:auto;background:var(--dourado);color:var(--preto);
+      font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:10px;min-width:18px;text-align:center;
+    }
+    .sidebar-footer{padding:1.5rem 1.8rem 0;border-top:1px solid var(--preto-borda);margin-top:auto;}
+    .btn-sair{
+      display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:var(--cinza);
+      cursor:pointer;background:none;border:none;font-family:var(--fonte-body);transition:color .3s;
+    }
+    .btn-sair:hover{color:var(--vermelho);}
+
+    /* ── MAIN ── */
+    .main{
+      margin-left:var(--sidebar-w);
+      width:calc(100% - var(--sidebar-w));
+      min-height:100vh;
+      display:flex;flex-direction:column;
+      overflow-x:hidden;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar{
+      background:rgba(10,10,10,.95);backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--preto-borda);
+      padding:1rem 2.5rem;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:50;
+      transition:transform .3s ease;
+    }
+    .topbar-titulo{font-family:var(--fonte-display);font-size:1.4rem;font-weight:300;color:var(--branco);}
+    .topbar-titulo span{color:var(--dourado);font-style:italic;}
+    .btn-novo{
+      font-family:var(--fonte-body);font-size:.72rem;font-weight:600;
+      letter-spacing:.15em;text-transform:uppercase;color:var(--preto);
+      background:var(--dourado);border:none;padding:.7rem 1.5rem;cursor:pointer;
+      text-decoration:none;display:flex;align-items:center;gap:.5rem;
+      transition:background .3s;
+      clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    }
+    .btn-novo:hover{background:var(--dourado-claro);}
+
+    /* ── CONTEÚDO ── */
+    .conteudo{padding:2.5rem;flex:1;width:100%;box-sizing:border-box;}
+    .painel{display:none;}
+    .painel.ativo{display:block;animation:fadeIn .4s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── CARDS RESUMO ── */
+    .resumo-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1.5px;
+      background:var(--preto-borda);
+      border:1px solid var(--preto-borda);
+      margin-bottom:2.5rem;
+      width:100%;
+    }
+    .resumo-card{
+      background:var(--preto-card);padding:1.8rem 1.5rem;
+      position:relative;overflow:hidden;min-width:0;
+    }
+    .resumo-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(to right,var(--cor-card,var(--dourado)),transparent);
+    }
+    .resumo-card-icon{
+      width:40px;height:40px;border:1px solid rgba(201,168,76,.2);
+      display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;
+    }
+    .resumo-card-icon i{color:var(--dourado);font-size:.9rem;}
+    .resumo-card-num{
+      font-family:var(--fonte-display);font-size:2.5rem;font-weight:600;
+      color:var(--branco);line-height:1;margin-bottom:.3rem;
+    }
+    .resumo-card-label{font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);}
+
+    /* ── PRÓXIMO AGENDAMENTO ── */
+    .proximo-box{
+      background:var(--preto-card);border:1px solid var(--preto-borda);
+      position:relative;overflow:hidden;padding:2rem;margin-bottom:2.5rem;
+    }
+    .proximo-box::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(to right,var(--dourado),transparent);
+    }
+    .proximo-tag{
+      font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;
+      color:var(--dourado);display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;
+    }
+    .proximo-tag::before{
+      content:'';width:6px;height:6px;border-radius:50%;background:var(--dourado);
+      animation:pulso 2s ease infinite;
+    }
+    @keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    .proximo-info{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .proximo-item-label{font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);margin-bottom:.4rem;}
+    .proximo-item-valor{font-size:.95rem;font-weight:400;color:var(--branco);}
+    .proximo-item-valor.dourado{font-family:var(--fonte-display);font-size:1.3rem;color:var(--dourado);}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Conta — JL Barbearia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --preto:#0A0A0A; --preto-card:#111111; --preto-borda:#1E1E1E;
+      --dourado:#C9A84C; --dourado-claro:#E2C06A; --branco:#F5F0E8;
+      --cinza:#888888; --cinza-claro:#CCCCCC; --verde:#4CAF7D;
+      --vermelho:#e57373; --amarelo:#FFB74D;
+      --fonte-display:'Cormorant Garamond',serif; --fonte-body:'Outfit',sans-serif;
+      --sidebar-w:260px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--preto);color:var(--branco);font-family:var(--fonte-body);min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{
+      position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+      background:var(--preto-card);border-right:1px solid var(--preto-borda);
+      display:flex;flex-direction:column;padding:2rem 0;z-index:100;overflow-y:auto;
+    }
+    .sidebar-logo{
+      font-family:var(--fonte-display);font-size:1.3rem;font-weight:600;
+      color:var(--branco);text-decoration:none;display:flex;align-items:center;
+      gap:.6rem;padding:0 1.8rem 2rem;border-bottom:1px solid var(--preto-borda);margin-bottom:1.5rem;
+    }
+    .sidebar-logo span{color:var(--dourado);}
+    .sidebar-logo i{color:var(--dourado);font-size:1rem;}
+    .sidebar-perfil{padding:0 1.8rem 1.5rem;border-bottom:1px solid var(--preto-borda);margin-bottom:1.5rem;}
+    .sidebar-avatar{
+      width:48px;height:48px;border-radius:50%;
+      background:linear-gradient(135deg,var(--preto-borda),#222);
+      border:1px solid rgba(201,168,76,.3);
+      display:flex;align-items:center;justify-content:center;margin-bottom:.75rem;
+    }
+    .sidebar-avatar i{color:var(--dourado);font-size:1.2rem;opacity:.8;}
+    .sidebar-nome{font-size:.9rem;font-weight:500;color:var(--branco);margin-bottom:.2rem;}
+    .sidebar-tipo{font-size:.68rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--dourado);}    
+    .sidebar-menu{flex:1;padding:0 1rem;}
+    .menu-label{font-size:.6rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--cinza);padding:0 .8rem;margin-bottom:.5rem;margin-top:1rem;}
+    .menu-item{
+      display:flex;align-items:center;gap:.75rem;padding:.75rem .8rem;
+      text-decoration:none;font-size:.82rem;font-weight:400;color:var(--cinza);
+      transition:all .3s;cursor:pointer;background:none;border:none;
+      width:100%;text-align:left;font-family:var(--fonte-body);border-radius:2px;
+    }
+    .menu-item i{font-size:.85rem;width:16px;text-align:center;}
+    .menu-item:hover{color:var(--branco);background:rgba(255,255,255,.04);}    
+    .menu-item.ativo{color:var(--dourado);background:rgba(201,168,76,.08);border-left:2px solid var(--dourado);}    
+    .menu-badge{
+      margin-left:auto;background:var(--dourado);color:var(--preto);
+      font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:10px;min-width:18px;text-align:center;
+    }
+    .sidebar-footer{padding:1.5rem 1.8rem 0;border-top:1px solid var(--preto-borda);margin-top:auto;}
+    .btn-sair{
+      display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:var(--cinza);
+      cursor:pointer;background:none;border:none;font-family:var(--fonte-body);transition:color .3s;
+    }
+    .btn-sair:hover{color:var(--vermelho);}
+
+    /* ── MAIN ── */
+    .main{
+      margin-left:var(--sidebar-w);
+      width:calc(100% - var(--sidebar-w));
+      min-height:100vh;
+      display:flex;flex-direction:column;
+      overflow-x:hidden;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar{
+      background:rgba(10,10,10,.95);backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--preto-borda);
+      padding:1rem 2.5rem;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:50;
+      transition:transform .3s ease;
+    }
+    .topbar-titulo{font-family:var(--fonte-display);font-size:1.4rem;font-weight:300;color:var(--branco);}    
+    .topbar-titulo span{color:var(--dourado);font-style:italic;}
+    .btn-novo{
+      font-family:var(--fonte-body);font-size:.72rem;font-weight:600;
+      letter-spacing:.15em;text-transform:uppercase;color:var(--preto);
+      background:var(--dourado);border:none;padding:.7rem 1.5rem;cursor:pointer;
+      text-decoration:none;display:flex;align-items:center;gap:.5rem;
+      transition:background .3s;
+      clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    }
+    .btn-novo:hover{background:var(--dourado-claro);}
+
+    /* ── CONTEÚDO ── */
+    .conteudo{padding:2.5rem;flex:1;width:100%;box-sizing:border-box;}
+    .painel{display:none;}
+    .painel.ativo{display:block;animation:fadeIn .4s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── CARDS RESUMO ── */
+    .resumo-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1.5px;
+      background:var(--preto-borda);
+      border:1px solid var(--preto-borda);
+      margin-bottom:2.5rem;
+      width:100%;
+    }
+    .resumo-card{
+      background:var(--preto-card);padding:1.8rem 1.5rem;
+      position:relative;overflow:hidden;min-width:0;
+    }
+    .resumo-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(to right,var(--cor-card,var(--dourado)),transparent);
+    }
+    .resumo-card-icon{
+      width:40px;height:40px;border:1px solid rgba(201,168,76,.2);
+      display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;
+    }
+    .resumo-card-icon i{color:var(--dourado);font-size:.9rem;}
+    .resumo-card-num{
+      font-family:var(--fonte-display);font-size:2.5rem;font-weight:600;
+      color:var(--branco);line-height:1;margin-bottom:.3rem;
+    }
+    .resumo-card-label{font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);}    
+
+    /* ── PRÓXIMO AGENDAMENTO ── */
+    .proximo-box{
+      background:var(--preto-card);border:1px solid var(--preto-borda);
+      position:relative;overflow:hidden;padding:2rem;margin-bottom:2.5rem;
+    }
+    .proximo-box::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(to right,var(--dourado),transparent);
+    }
+    .proximo-tag{
+      font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;
+      color:var(--dourado);display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;
+    }
+    .proximo-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--dourado);animation:pulso 2s ease infinite;}
+    @keyframes pulso{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    .proximo-info{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;}
+    .proximo-item-label{font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);margin-bottom:.4rem;}
+    .proximo-item-valor{font-size:.95rem;font-weight:400;color:var(--branco);}    
+    .proximo-item-valor.dourado{font-family:var(--fonte-display);font-size:1.3rem;color:var(--dourado);}    
+
+    /* ── SEÇÃO ── */
+    .secao-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+    .secao-titulo{font-family:var(--fonte-display);font-size:1.5rem;font-weight:300;color:var(--branco);}    
+    .secao-titulo em{font-style:italic;color:var(--dourado);}    
+    .filtros{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}    
+    .filtro-btn{font-family:var(--fonte-body);font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);background:var(--preto-card);border:1px solid var(--preto-borda);padding:.5rem 1rem;cursor:pointer;transition:all .3s;}    
+    .filtro-btn:hover{border-color:rgba(201,168,76,.3);color:var(--branco);}    
+    .filtro-btn.ativo{border-color:var(--dourado);color:var(--dourado);background:rgba(201,168,76,.06);}    
+
+    /* ── LISTA AGENDAMENTOS ── */
+    .agendamentos-lista{display:flex;flex-direction:column;gap:1px;background:var(--preto-borda);border:1px solid var(--preto-borda);}    
+    .agendamento-card{background:var(--preto-card);padding:1.5rem 2rem;display:grid;grid-template-columns:auto 1fr auto auto;gap:2rem;align-items:center;transition:background .3s;}    
+    .agendamento-card:hover{background:#141414;}    
+    .ag-data{text-align:center;min-width:55px;}    
+    .ag-data-dia{font-family:var(--fonte-display);font-size:2rem;font-weight:600;color:var(--dourado);line-height:1;}    
+    .ag-data-mes{font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);}    
+    .ag-servico{font-size:.9rem;font-weight:500;color:var(--branco);margin-bottom:.3rem;}    
+    .ag-detalhes{font-size:.78rem;color:var(--cinza);display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}    
+    .ag-preco{font-family:var(--fonte-display);font-size:1.3rem;font-weight:600;color:var(--dourado);white-space:nowrap;}    
+    .ag-status{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}    
+    .status-badge{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .8rem;border-radius:2px;white-space:nowrap;}    
+    .status-pendente{color:var(--amarelo);background:rgba(255,183,77,.1);border:1px solid rgba(255,183,77,.3);}    
+    .status-confirmado{color:var(--verde);background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);}    
+    .status-cancelado{color:var(--vermelho);background:rgba(229,115,115,.1);border:1px solid rgba(229,115,115,.3);}    
+    .status-concluido{color:var(--cinza);background:rgba(136,136,136,.1);border:1px solid rgba(136,136,136,.3);}    
+    .btn-cancelar{font-size:.65rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--vermelho);background:none;border:1px solid rgba(229,115,115,.2);padding:.3rem .7rem;cursor:pointer;transition:background .3s;font-family:var(--fonte-body);}    
+    .btn-cancelar:hover{background:rgba(229,115,115,.08);}    
+    .lista-vazia{background:var(--preto-card);padding:4rem 2rem;text-align:center;}    
+    .lista-vazia i{font-size:2.5rem;color:rgba(201,168,76,.15);margin-bottom:1rem;display:block;}    
+    .lista-vazia p{font-size:.85rem;color:var(--cinza);margin-bottom:1.5rem;}    
+
+    /* ── PERFIL ── */
+    .perfil-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}    
+    .perfil-box{background:var(--preto-card);border:1px solid var(--preto-borda);padding:2rem;position:relative;}    
+    .perfil-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--dourado),transparent);}    
+    .perfil-box-titulo{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dourado);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem;}    
+    .campo-perfil{margin-bottom:1.2rem;}    
+    .campo-perfil label{display:block;font-size:.68rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);margin-bottom:.5rem;}    
+    .campo-perfil input{width:100%;background:var(--preto);border:1px solid var(--preto-borda);color:var(--branco);font-family:var(--fonte-body);font-size:.9rem;font-weight:300;padding:.8rem 1rem;outline:none;transition:border-color .3s;}    
+    .campo-perfil input:focus{border-color:var(--dourado);}    
+    .campo-perfil input:disabled{opacity:.5;cursor:not-allowed;}    
+    .btn-salvar{font-family:var(--fonte-body);font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--preto);background:var(--dourado);border:none;padding:.85rem 2rem;cursor:pointer;transition:background .3s;margin-top:.5rem;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}    
+    .btn-salvar:hover{background:var(--dourado-claro);}    
+
+    /* ── MODAL ── */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}    
+    .modal-overlay.visivel{display:flex;}    
+    .modal{background:var(--preto-card);border:1px solid var(--preto-borda);padding:2.5rem;max-width:420px;width:90%;position:relative;animation:fadeIn .3s ease;}    
+    .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--vermelho),transparent);}    
+    .modal-icone{width:48px;height:48px;border-radius:50%;background:rgba(229,115,115,.1);border:1px solid rgba(229,115,115,.3);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;}    
+    .modal-icone i{color:var(--vermelho);font-size:1.1rem;}    
+    .modal-titulo{font-family:var(--fonte-display);font-size:1.5rem;font-weight:300;color:var(--branco);margin-bottom:.75rem;}    
+    .modal-desc{font-size:.85rem;font-weight:300;color:var(--cinza);line-height:1.7;margin-bottom:2rem;}    
+    .modal-btns{display:flex;gap:1rem;}    
+    .btn-modal-cancelar{flex:1;font-family:var(--fonte-body);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--vermelho);background:rgba(229,115,115,.08);border:1px solid rgba(229,115,115,.3);padding:.9rem;cursor:pointer;transition:background .3s;}    
+    .btn-modal-cancelar:hover{background:rgba(229,115,115,.15);}    
+    .btn-modal-voltar{flex:1;font-family:var(--fonte-body);font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);background:none;border:1px solid var(--preto-borda);padding:.9rem;cursor:pointer;transition:all .3s;}    
+    .btn-modal-voltar:hover{border-color:var(--cinza);color:var(--branco);}    
+
+    /* ── LOADING ── */
+    .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem;gap:1rem;}    
+    .loading i{color:var(--dourado);font-size:1.5rem;animation:spin 1s linear infinite;}    
+    .loading p{font-size:.82rem;color:var(--cinza);}    
+    @keyframes spin{to{transform:rotate(360deg)}}    
+
+    /* ── RESPONSIVO ── */
+    @media(max-width:900px){
+      .sidebar{transform:translateX(-100%);transition:transform .3s;}
+      .main{margin-left:0;width:100%;}
+      .resumo-grid{grid-template-columns:1fr;}
+      .proximo-info{grid-template-columns:repeat(2,1fr);}
+      .agendamento-card{grid-template-columns:auto 1fr;}
+      .ag-preco,.ag-status{display:none;}
+      .perfil-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="../index.html" class="sidebar-logo">
+      <i class="fa-solid fa-scissors"></i>JL <span>Barbearia</span>
+    </a>
+    <div class="sidebar-perfil">
+      <div class="sidebar-avatar"><i class="fa-solid fa-user"></i></div>
+      <div class="sidebar-nome" id="sidebar-nome">Carregando...</div>
+      <div class="sidebar-tipo">Cliente</div>
+    </div>
+    <nav class="sidebar-menu">
+      <div class="menu-label">Menu</div>
+      <button class="menu-item ativo" onclick="mostrarPainel('visao-geral')">
+        <i class="fa-solid fa-house"></i>Visão Geral
+      </button>
+      <button class="menu-item" onclick="mostrarPainel('agendamentos')">
+        <i class="fa-solid fa-calendar"></i>Meus Agendamentos
+        <span class="menu-badge" id="badge-agendamentos">0</span>
+      </button>
+      <button class="menu-item" onclick="mostrarPainel('perfil')">
+        <i class="fa-solid fa-user-pen"></i>Meu Perfil
+      </button>
+      <div class="menu-label" style="margin-top:1.5rem;">Ações</div>
+      <a href="../agendamento.html" class="menu-item">
+        <i class="fa-solid fa-calendar-plus"></i>Novo Agendamento
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="sair()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>Sair da conta
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar" id="topbar">
+      <div class="topbar-titulo">Olá, <span id="topbar-nome">cliente</span></div>
+      <a href="../agendamento.html" class="btn-novo">
+        <i class="fa-solid fa-plus"></i>Novo Agendamento
+      </a>
+    </div>
+
+    <div class="conteudo">
+
+      <!-- VISÃO GERAL -->
+      <div class="painel ativo" id="painel-visao-geral">
+        <div class="resumo-grid">
+          <div class="resumo-card" style="--cor-card:var(--dourado)">
+            <div class="resumo-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="resumo-card-num" id="total-agendamentos">—</div>
+            <div class="resumo-card-label">Total de agendamentos</div>
+          </div>
+          <div class="resumo-card" style="--cor-card:var(--verde)">
+            <div class="resumo-card-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="resumo-card-num" id="total-concluidos">—</div>
+            <div class="resumo-card-label">Concluídos</div>
+          </div>
+          <div class="resumo-card" style="--cor-card:var(--amarelo)">
+            <div class="resumo-card-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="resumo-card-num" id="total-pendentes">—</div>
+            <div class="resumo-card-label">Pendentes / Confirmados</div>
+          </div>
+        </div>
+
+        <div class="proximo-box">
+          <div class="proximo-tag">Próximo agendamento</div>
+          <div id="proximo-conteudo">
+            <div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div>
+          </div>
+        </div>
+
+        <div class="secao-header">
+          <h2 class="secao-titulo">Últimos <em>atendimentos</em></h2>
+          <button class="filtro-btn" onclick="mostrarPainel('agendamentos')" style="border-color:rgba(201,168,76,.3);color:var(--dourado);">
+            Ver todos <i class="fa-solid fa-arrow-right" style="font-size:.6rem;margin-left:.3rem;"></i>
+          </button>
+        </div>
+        <div class="agendamentos-lista" id="lista-recentes">
+          <div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- AGENDAMENTOS -->
+      <div class="painel" id="painel-agendamentos">
+        <div class="secao-header">
+          <h2 class="secao-titulo">Meus <em>Agendamentos</em></h2>
+        </div>
+        <div class="filtros">
+          <button class="filtro-btn ativo" onclick="filtrarAgendamentos('todos',this)">Todos</button>
+          <button class="filtro-btn" onclick="filtrarAgendamentos('pendente',this)">Pendentes</button>
+          <button class="filtro-btn" onclick="filtrarAgendamentos('confirmado',this)">Confirmados</button>
+          <button class="filtro-btn" onclick="filtrarAgendamentos('concluido',this)">Concluídos</button>
+          <button class="filtro-btn" onclick="filtrarAgendamentos('cancelado',this)">Cancelados</button>
+        </div>
+        <div class="agendamentos-lista" id="lista-todos">
+          <div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- PERFIL -->
+      <div class="painel" id="painel-perfil">
+        <div class="secao-header">
+          <h2 class="secao-titulo">Meu <em>Perfil</em></h2>
+        </div>
+        <div class="perfil-grid">
+          <div class="perfil-box">
+            <div class="perfil-box-titulo"><i class="fa-solid fa-user"></i>Dados pessoais</div>
+            <div class="campo-perfil"><label>Nome completo</label><input type="text" id="perfil-nome" /></div>
+            <div class="campo-perfil"><label>E-mail</label><input type="email" id="perfil-email" disabled /></div>
+            <div class="campo-perfil"><label>WhatsApp / Telefone</label><input type="tel" id="perfil-tel" /></div>
+            <button class="btn-salvar" onclick="salvarPerfil()"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+          </div>
+          <div class="perfil-box">
+            <div class="perfil-box-titulo"><i class="fa-solid fa-lock"></i>Segurança</div>
+            <div class="campo-perfil"><label>Senha atual</label><input type="password" id="senha-atual" placeholder="••••••••" /></div>
+            <div class="campo-perfil"><label>Nova senha</label><input type="password" id="senha-nova" placeholder="mínimo 6 caracteres" /></div>
+            <div class="campo-perfil"><label>Confirmar nova senha</label><input type="password" id="senha-confirma" placeholder="repita a nova senha" /></div>
+            <button class="btn-salvar" onclick="alterarSenha()"><i class="fa-solid fa-key"></i> Alterar senha</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL CANCELAMENTO -->
+  <div class="modal-overlay" id="modal-cancelar">
+    <div class="modal">
+      <div class="modal-icone"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 class="modal-titulo">Cancelar agendamento?</h3>
+      <p class="modal-desc">Tem certeza que deseja cancelar? Esta ação não pode ser desfeita.</p>
+      <div class="modal-btns">
+        <button class="btn-modal-voltar" onclick="fecharModal()">Voltar</button>
+        <button class="btn-modal-cancelar" onclick="confirmarCancelamento()">
+          <i class="fa-solid fa-xmark"></i> Sim, cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Dados mockados para demonstração ───────
+    const USUARIO = {
+      nome: localStorage.getItem('jl_nome') || 'Cliente',
+      email: 'cliente@email.com',
+      tel: '(11) 99999-0000'
+    };
+
+    const AGENDAMENTOS = [
+      { id:'1', servico:'Corte + Barba',    profissional:'Norberto Junior', data:'2026-06-15', horario:'10:00', preco:70,  status:'confirmado' },
+      { id:'2', servico:'Corte Masculino',  profissional:'Lucas Dias',      data:'2026-06-08', horario:'14:30', preco:45,  status:'pendente'   },
+      { id:'3', servico:'Barba',            profissional:'Jorge Sampaio',   data:'2026-05-28', horario:'11:00', preco:35,  status:'concluido'  },
+      { id:'4', servico:'Sobrancelha',      profissional:'Norberto Junior', data:'2026-05-10', horario:'09:30', preco:25,  status:'concluido'  },
+      { id:'5', servico:'Corte Masculino',  profissional:'Lucas Dias',      data:'2026-04-22', horario:'15:00', preco:45,  status:'cancelado'  }
+    ];
+
+    const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    let agendamentoParaCancelar = null;
+
+    // ── Init ────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      const nome = USUARIO.nome.split(' ')[0];
+      document.getElementById('sidebar-nome').textContent = USUARIO.nome;
+      document.getElementById('topbar-nome').textContent  = nome;
+      document.getElementById('perfil-nome').value  = USUARIO.nome;
+      document.getElementById('perfil-email').value = USUARIO.email;
+      document.getElementById('perfil-tel').value   = USUARIO.tel;
+      carregarVisaoGeral();
+    });
+
+    // ── Visão geral ─────────────────────────────
+    function carregarVisaoGeral() {
+      const total      = AGENDAMENTOS.length;
+      const concluidos = AGENDAMENTOS.filter(a => a.status==='concluido').length;
+      const pendentes  = AGENDAMENTOS.filter(a => ['pendente','confirmado'].includes(a.status)).length;
+
+      document.getElementById('total-agendamentos').textContent = total;
+      document.getElementById('total-concluidos').textContent   = concluidos;
+      document.getElementById('total-pendentes').textContent    = pendentes;
+      document.getElementById('badge-agendamentos').textContent = pendentes;
+
+      const proximos = AGENDAMENTOS
+        .filter(a => ['pendente','confirmado'].includes(a.status))
+        .sort((a,b) => new Date(a.data)-new Date(b.data));
+
+      const el = document.getElementById('proximo-conteudo');
+      if (!proximos.length) {
+        el.innerHTML = `<div class="proximo-vazio">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          <p>Nenhum agendamento próximo.</p>
+          <a href="../agendamento.html" class="btn-novo" style="display:inline-flex;">
+            <i class="fa-solid fa-plus"></i> Agendar agora
+          </a></div>`;
+      } else {
+        const p = proximos[0];
+        const [a,m,d] = p.data.split('-');
+        el.innerHTML = `<div class="proximo-info">
+          <div><div class="proximo-item-label">Serviço</div><div class="proximo-item-valor">${p.servico}</div></div>
+          <div><div class="proximo-item-label">Profissional</div><div class="proximo-item-valor">${p.profissional}</div></div>
+          <div><div class="proximo-item-label">Data e horário</div><div class="proximo-item-valor">${d} ${MESES[parseInt(m)-1]} · ${p.horario}</div></div>
+          <div><div class="proximo-item-label">Valor</div><div class="proximo-item-valor dourado">R$ ${p.preco}</div></div>
+        </div>`;
+      }
+
+      renderizarLista('lista-recentes',
+        [...AGENDAMENTOS].sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,3), false);
+    }
+
+    // ── Renderizar lista ────────────────────────
+    function renderizarLista(elId, lista, mostraCancelar=true) {
+      const el = document.getElementById(elId);
+      if (!lista.length) {
+        el.innerHTML = `<div class="lista-vazia">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          <p>Nenhum agendamento encontrado.</p>
+          <a href="../agendamento.html" class="btn-novo" style="display:inline-flex;margin:0 auto;">
+            <i class="fa-solid fa-plus"></i> Fazer agendamento
+          </a></div>`;
+        return;
+      }
+      el.innerHTML = lista.map(ag => {
+        const [,m,d] = ag.data.split('-');
+        const podeCancelar = mostraCancelar && ['pendente','confirmado'].includes(ag.status);
+        return `<div class="agendamento-card">
+          <div class="ag-data">
+            <div class="ag-data-dia">${d}</div>
+            <div class="ag-data-mes">${MESES[parseInt(m)-1]}</div>
+          </div>
+          <div>
+            <div class="ag-servico">${ag.servico}</div>
+            <div class="ag-detalhes">
+              <span><i class="fa-solid fa-user"></i> ${ag.profissional}</span>
+              <span><i class="fa-solid fa-clock"></i> ${ag.horario}</span>
+            </div>
+          </div>
+          <div class="ag-preco">R$ ${ag.preco}</div>
+          <div class="ag-status">
+            <span class="status-badge status-${ag.status}">${traduzir(ag.status)}</span>
+            ${podeCancelar ? `<button class="btn-cancelar" onclick="abrirModal('${ag.id}')">Cancelar</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function traduzir(s) {
+      return {pendente:'Pendente',confirmado:'Confirmado',concluido:'Concluído',cancelado:'Cancelado'}[s]||s;
+    }
+
+    // ── Filtros ─────────────────────────────────
+    function filtrarAgendamentos(filtro, btn) {
+      document.querySelectorAll('.filtros .filtro-btn').forEach(b=>b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+      const lista = filtro==='todos' ? AGENDAMENTOS : AGENDAMENTOS.filter(a=>a.status===filtro);
+      renderizarLista('lista-todos', lista, true);
+    }
+
+    // ── Painéis ─────────────────────────────────
+    function mostrarPainel(id) {
+      document.querySelectorAll('.painel').forEach(p=>p.classList.remove('ativo'));
+      document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('ativo'));
+      document.getElementById(`painel-${id}`).classList.add('ativo');
+      if (id==='agendamentos') renderizarLista('lista-todos', AGENDAMENTOS, true);
+    }
+
+    // ── Modal ───────────────────────────────────
+    function abrirModal(id) { agendamentoParaCancelar=id; document.getElementById('modal-cancelar').classList.add('visivel'); }
+    function fecharModal()  { agendamentoParaCancelar=null; document.getElementById('modal-cancelar').classList.remove('visivel'); }
+    function confirmarCancelamento() {
+      const ag = AGENDAMENTOS.find(a=>a.id===agendamentoParaCancelar);
+      if (ag) ag.status='cancelado';
+      fecharModal();
+      carregarVisaoGeral();
+      renderizarLista('lista-todos', AGENDAMENTOS, true);
+    }
+
+    // ── Perfil ──────────────────────────────────
+    function salvarPerfil() {
+      const nome = document.getElementById('perfil-nome').value.trim();
+      if (!nome) { alert('Preencha o nome.'); return; }
+      USUARIO.nome = nome;
+      localStorage.setItem('jl_nome', nome);
+      document.getElementById('sidebar-nome').textContent = nome;
+      document.getElementById('topbar-nome').textContent  = nome.split(' ')[0];
+      alert('Perfil atualizado!');
+    }
+    function alterarSenha() {
+      const nova     = document.getElementById('senha-nova').value;
+      const confirma = document.getElementById('senha-confirma').value;
+      if (nova.length < 6) { alert('Mínimo 6 caracteres.'); return; }
+      if (nova !== confirma) { alert('Senhas não coincidem.'); return; }
+      alert('Senha alterada com sucesso!');
+      ['senha-atual','senha-nova','senha-confirma'].forEach(id => document.getElementById(id).value='');
+    }
+
+    // ── Sair ───────────────────────────────────
+    function sair() {
+      ['jl_token','jl_perfil','jl_nome'].forEach(k=>localStorage.removeItem(k));
+      window.location.href = '../login.html';
+    }
+
+    // ── Topbar some no scroll ───────────────────
+    let ultimoScroll = 0;
+    const topbar = document.getElementById('topbar');
+    window.addEventListener('scroll', () => {
+      const atual = window.scrollY;
+      topbar.style.transform = (atual > ultimoScroll && atual > 60) ? 'translateY(-100%)' : 'translateY(0)';
+      ultimoScroll = atual;
+    }, { passive: true });
+
+    // Fecha modal ao clicar fora
+    document.getElementById('modal-cancelar').addEventListener('click', function(e) {
+      if (e.target===this) fecharModal();
+    });
+  </script>
+</body>
+</html>

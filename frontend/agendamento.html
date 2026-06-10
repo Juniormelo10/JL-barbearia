@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendar Horário — JL Barbearia</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --preto:        #0A0A0A;
+      --preto-card:   #111111;
+      --preto-borda:  #1E1E1E;
+      --dourado:      #C9A84C;
+      --dourado-claro:#E2C06A;
+      --branco:       #F5F0E8;
+      --cinza:        #888888;
+      --cinza-claro:  #CCCCCC;
+      --verde:        #4CAF7D;
+      --fonte-display:'Cormorant Garamond', serif;
+      --fonte-body:   'Outfit', sans-serif;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--preto);
+      color: var(--branco);
+      font-family: var(--fonte-body);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed;
+      top:0; left:0; right:0;
+      z-index: 1000;
+      padding: 1.2rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--preto-borda);
+    }
+    .logo {
+      font-family: var(--fonte-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--branco);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo span { color: var(--dourado); }
+    .logo i { color: var(--dourado); font-size: 1rem; }
+    .header-voltar {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cinza);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.3s;
+    }
+    .header-voltar:hover { color: var(--dourado); }
+
+    /* ── HERO MINI ── */
+    .page-hero {
+      padding: 8rem 5% 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      margin-bottom: 1rem;
+    }
+    .page-tag::before, .page-tag::after {
+      content: ''; width: 30px; height: 1px;
+      background: var(--dourado); opacity: 0.6;
+    }
+    .page-titulo {
+      font-family: var(--fonte-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      color: var(--branco);
+      margin-bottom: 0.75rem;
+    }
+    .page-titulo em { font-style: italic; color: var(--dourado); }
+    .page-sub {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--cinza);
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── STEPS (indicador de progresso) ── */
+    .steps-container {
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      padding: 0 5%;
+    }
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      position: relative;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--preto-borda);
+      background: var(--preto-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--cinza);
+      transition: all 0.4s;
+      position: relative;
+    }
+    .step.ativo .step-num {
+      border-color: var(--dourado);
+      background: var(--dourado);
+      color: var(--preto);
+    }
+    .step.concluido .step-num {
+      border-color: var(--verde);
+      background: var(--verde);
+      color: var(--preto);
+    }
+    .step-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cinza);
+      white-space: nowrap;
+      transition: color 0.4s;
+    }
+    .step.ativo .step-label { color: var(--dourado); }
+    .step.concluido .step-label { color: var(--verde); }
+
+    .step-linha {
+      flex: 1;
+      height: 1px;
+      background: var(--preto-borda);
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .step-linha-fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--dourado);
+      transition: width 0.6s ease;
+    }
+
+    /* ── CONTAINER PRINCIPAL ── */
+    .agendar-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 5% 6rem;
+    }
+
+    /* ── PAINÉIS DE ETAPA ── */
+    .etapa {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .etapa.ativa { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .etapa-titulo {
+      font-family: var(--fonte-display);
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--branco);
+      margin-bottom: 0.5rem;
+    }
+    .etapa-sub {
+      font-size: 0.85rem;
+      color: var(--cinza);
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    /* ── GRID DE SELEÇÃO ── */
+    .selecao-grid {
+      display: grid;
+      gap: 1px;
+      background: var(--preto-borda);
+      border: 1px solid var(--preto-borda);
+      margin-bottom: 2.5rem;
+    }
+    .selecao-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .selecao-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .selecao-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .selecao-item {
+      background: var(--preto-card);
+      padding: 1.8rem 1.5rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    .selecao-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 0;
+      background: rgba(201,168,76,0.05);
+      transition: height 0.3s;
+    }
+    .selecao-item:hover { background: #141414; }
+    .selecao-item:hover::before { height: 100%; }
+    .selecao-item.selecionado {
+      background: #141414;
+      outline: 1px solid var(--dourado);
+      outline-offset: -1px;
+    }
+    .selecao-item.selecionado::after {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-size: 0.7rem;
+      color: var(--dourado);
+    }
+
+    /* Item serviço */
+    .servico-num-sel {
+      font-family: var(--fonte-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: rgba(201,168,76,0.15);
+      line-height: 1;
+      margin-bottom: 1rem;
+      transition: color 0.3s;
+    }
+    .selecao-item.selecionado .servico-num-sel { color: rgba(201,168,76,0.3); }
+    .servico-icon-sel {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+    .selecao-item.selecionado .servico-icon-sel { border-color: var(--dourado); }
+    .servico-icon-sel i { color: var(--dourado); font-size: 0.85rem; }
+    .servico-nome-sel {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--branco);
+      margin-bottom: 0.5rem;
+    }
+    .servico-desc-sel {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--cinza);
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+    }
+    .servico-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--preto-borda);
+      padding-top: 1rem;
+    }
+    .servico-preco-sel {
+      font-family: var(--fonte-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--dourado);
+    }
+    .servico-dur-sel {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cinza);
+    }
+
+    /* Item profissional */
+    .prof-foto {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: #1A1A1A;
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+    .selecao-item.selecionado .prof-foto { border-color: var(--dourado); }
+    .prof-foto i { color: var(--dourado); font-size: 1.4rem; opacity: 0.7; }
+    .prof-num {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--dourado);
+      margin-bottom: 0.3rem;
+    }
+    .prof-nome-sel {
+      font-family: var(--fonte-display);
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--branco);
+      margin-bottom: 0.3rem;
+    }
+    .prof-esp-sel {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cinza);
+    }
+
+    /* ── SELEÇÃO DE DATA E HORÁRIO ── */
+    .data-horario-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .campo-grupo label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 0.75rem;
+    }
+
+    .campo-input {
+      width: 100%;
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      color: var(--branco);
+      font-family: var(--fonte-body);
+      font-size: 0.9rem;
+      font-weight: 300;
+      padding: 1rem 1.2rem;
+      outline: none;
+      transition: border-color 0.3s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .campo-input:focus { border-color: var(--dourado); }
+    .campo-input option { background: #111; }
+
+    .horarios-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    .horario-btn {
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      color: var(--cinza-claro);
+      font-family: var(--fonte-body);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.75rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    .horario-btn:hover {
+      border-color: rgba(201,168,76,0.4);
+      color: var(--branco);
+    }
+    .horario-btn.selecionado {
+      border-color: var(--dourado);
+      background: rgba(201,168,76,0.08);
+      color: var(--dourado);
+    }
+    .horario-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    /* ── FORMULÁRIO DE DADOS ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .campo-grupo textarea {
+      width: 100%;
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      color: var(--branco);
+      font-family: var(--fonte-body);
+      font-size: 0.9rem;
+      font-weight: 300;
+      padding: 1rem 1.2rem;
+      outline: none;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.3s;
+    }
+    .campo-grupo textarea:focus { border-color: var(--dourado); }
+    .campo-grupo textarea::placeholder { color: var(--cinza); }
+    .campo-input::placeholder { color: var(--cinza); }
+
+    /* ── RESUMO (etapa 4) ── */
+    .resumo-box {
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .resumo-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--dourado), transparent);
+    }
+    .resumo-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--preto-borda);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .resumo-header-titulo {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dourado);
+    }
+    .resumo-body { padding: 2rem; }
+    .resumo-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--preto-borda);
+    }
+    .resumo-row:last-child { border-bottom: none; }
+    .resumo-chave {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cinza);
+    }
+    .resumo-valor {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--branco);
+      text-align: right;
+    }
+    .resumo-valor.dourado {
+      font-family: var(--fonte-display);
+      font-size: 1.3rem;
+      color: var(--dourado);
+    }
+
+    /* ── CONFIRMAÇÃO ── */
+    .confirmacao {
+      display: none;
+      text-align: center;
+      padding: 4rem 2rem;
+      animation: fadeIn 0.6s ease;
+    }
+    .confirmacao.ativa { display: block; }
+    .confirmacao-icone {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(76,175,125,0.1);
+      border: 1px solid var(--verde);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+    }
+    .confirmacao-icone i { color: var(--verde); font-size: 2rem; }
+    .confirmacao-titulo {
+      font-family: var(--fonte-display);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--branco);
+      margin-bottom: 1rem;
+    }
+    .confirmacao-titulo em { font-style: italic; color: var(--verde); }
+    .confirmacao-sub {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--cinza);
+      line-height: 1.8;
+      max-width: 400px;
+      margin: 0 auto 3rem;
+    }
+
+    /* ── NAVEGAÇÃO ENTRE ETAPAS ── */
+    .nav-etapas {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--preto-borda);
+    }
+
+    .btn-voltar {
+      font-family: var(--fonte-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cinza);
+      background: none;
+      border: 1px solid var(--preto-borda);
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-voltar:hover { border-color: var(--cinza); color: var(--branco); }
+
+    .btn-avancar {
+      font-family: var(--fonte-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--preto);
+      background: var(--dourado);
+      border: none;
+      padding: 1rem 2.5rem;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+    .btn-avancar:hover { background: var(--dourado-claro); transform: translateY(-1px); }
+    .btn-avancar:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+
+    /* ── UPLOAD DE FOTO ── */
+    .upload-area {
+      border: 1px dashed rgba(201,168,76,0.3);
+      background: var(--preto-card);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+    }
+    .upload-area:hover {
+      border-color: var(--dourado);
+      background: rgba(201,168,76,0.03);
+    }
+    .upload-area.arrastando {
+      border-color: var(--dourado);
+      background: rgba(201,168,76,0.06);
+    }
+    .upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-icone {
+      width: 48px; height: 48px;
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      transition: border-color 0.3s;
+    }
+    .upload-area:hover .upload-icone { border-color: var(--dourado); }
+    .upload-icone i { color: var(--dourado); font-size: 1.1rem; }
+    .upload-texto {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--cinza-claro);
+      margin-bottom: 0.4rem;
+    }
+    .upload-subtexto {
+      font-size: 0.72rem;
+      color: var(--cinza);
+      letter-spacing: 0.05em;
+    }
+    .upload-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.3rem 0.8rem;
+      margin-top: 1rem;
+    }
+    .foto-preview {
+      display: none;
+      position: relative;
+      margin-top: 1rem;
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      overflow: hidden;
+    }
+    .foto-preview.visivel { display: block; }
+    .foto-preview img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .foto-preview-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.8), transparent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .foto-preview-nome {
+      font-size: 0.72rem;
+      color: var(--branco);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70%;
+    }
+    .foto-remover {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #e57373;
+      background: none;
+      border: 1px solid rgba(229,115,115,0.3);
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .foto-remover:hover { background: rgba(229,115,115,0.1); }
+    .resumo-foto { display: none; margin-top: 0.75rem; }
+    .resumo-foto.visivel { display: block; }
+    .resumo-foto img {
+      width: 100%;
+      max-height: 160px;
+      object-fit: cover;
+      border: 1px solid var(--preto-borda);
+    }
+
+    /* Mensagem de erro */
+    .msg-erro {
+      display: none;
+      font-size: 0.8rem;
+      color: #e57373;
+      padding: 0.8rem 1rem;
+      background: rgba(229,115,115,0.08);
+      border: 1px solid rgba(229,115,115,0.2);
+      margin-bottom: 1rem;
+    }
+    .msg-erro.visivel { display: block; }
+
+    /* ── RESPONSIVIDADE ── */
+    @media (max-width: 768px) {
+      .selecao-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+      .selecao-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+      .data-horario-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: 1; }
+      .horarios-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .selecao-grid.cols-2 { grid-template-columns: 1fr; }
+      .selecao-grid.cols-3 { grid-template-columns: 1fr; }
+      .selecao-grid.cols-4 { grid-template-columns: 1fr; }
+      .horarios-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-scissors"></i>
+      JL <span>Barbearia</span>
+    </a>
+    <a href="index.html" class="header-voltar">
+      <i class="fa-solid fa-arrow-left"></i> Voltar ao início
+    </a>
+  </header>
+
+  <!-- HERO MINI -->
+  <div class="page-hero">
+    <div class="page-tag">Reserve seu horário</div>
+    <h1 class="page-titulo">Faça seu <em>agendamento</em></h1>
+    <p class="page-sub">Escolha o serviço, profissional e horário em apenas 4 passos simples.</p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps-container">
+    <div class="steps">
+      <div class="step ativo" id="step-1">
+        <div class="step-num">1</div>
+        <div class="step-label">Serviço</div>
+      </div>
+      <div class="step-linha"><div class="step-linha-fill" id="linha-1"></div></div>
+      <div class="step" id="step-2">
+        <div class="step-num">2</div>
+        <div class="step-label">Profissional</div>
+      </div>
+      <div class="step-linha"><div class="step-linha-fill" id="linha-2"></div></div>
+      <div class="step" id="step-3">
+        <div class="step-num">3</div>
+        <div class="step-label">Data e Hora</div>
+      </div>
+      <div class="step-linha"><div class="step-linha-fill" id="linha-3"></div></div>
+      <div class="step" id="step-4">
+        <div class="step-num">4</div>
+        <div class="step-label">Confirmação</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER PRINCIPAL -->
+  <div class="agendar-container">
+
+    <!-- ETAPA 1 — SERVIÇO -->
+    <div class="etapa ativa" id="etapa-1">
+      <h2 class="etapa-titulo">Qual serviço você deseja?</h2>
+      <p class="etapa-sub">Selecione um dos nossos serviços abaixo.</p>
+
+      <div class="selecao-grid cols-2">
+        <div class="selecao-item" data-servico="corte" data-preco="45" data-duracao="30" onclick="selecionarServico(this)">
+          <div class="servico-num-sel">01</div>
+          <div class="servico-icon-sel"><i class="fa-solid fa-scissors"></i></div>
+          <div class="servico-nome-sel">Corte Masculino</div>
+          <div class="servico-desc-sel">Acabamento fino, modelagem personalizada e estilo autêntico para cada perfil.</div>
+          <div class="servico-meta">
+            <span class="servico-preco-sel">R$ 45</span>
+            <span class="servico-dur-sel">30 min</span>
+          </div>
+        </div>
+
+        <div class="selecao-item" data-servico="barba" data-preco="35" data-duracao="25" onclick="selecionarServico(this)">
+          <div class="servico-num-sel">02</div>
+          <div class="servico-icon-sel"><i class="fa-solid fa-face-smile"></i></div>
+          <div class="servico-nome-sel">Barba</div>
+          <div class="servico-desc-sel">Desenho preciso e finalização com produtos premium para um visual elegante.</div>
+          <div class="servico-meta">
+            <span class="servico-preco-sel">R$ 35</span>
+            <span class="servico-dur-sel">25 min</span>
+          </div>
+        </div>
+
+        <div class="selecao-item" data-servico="corte-barba" data-preco="70" data-duracao="50" onclick="selecionarServico(this)">
+          <div class="servico-num-sel">03</div>
+          <div class="servico-icon-sel"><i class="fa-solid fa-star"></i></div>
+          <div class="servico-nome-sel">Corte + Barba</div>
+          <div class="servico-desc-sel">Pacote completo de transformação com corte moderno e barba desenhada com perfeição.</div>
+          <div class="servico-meta">
+            <span class="servico-preco-sel">R$ 70</span>
+            <span class="servico-dur-sel">50 min</span>
+          </div>
+        </div>
+
+        <div class="selecao-item" data-servico="sobrancelha" data-preco="25" data-duracao="15" onclick="selecionarServico(this)">
+          <div class="servico-num-sel">04</div>
+          <div class="servico-icon-sel"><i class="fa-solid fa-eye"></i></div>
+          <div class="servico-nome-sel">Sobrancelha</div>
+          <div class="servico-desc-sel">Design de sobrancelhas que valoriza seu rosto com precisão, estilo e naturalidade.</div>
+          <div class="servico-meta">
+            <span class="servico-preco-sel">R$ 25</span>
+            <span class="servico-dur-sel">15 min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg-erro" id="erro-1">Por favor, selecione um serviço antes de continuar.</div>
+      <div class="nav-etapas">
+        <span></span>
+        <button class="btn-avancar" onclick="avancar(1)">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ETAPA 2 — PROFISSIONAL -->
+    <div class="etapa" id="etapa-2">
+      <h2 class="etapa-titulo">Escolha o profissional</h2>
+      <p class="etapa-sub">Selecione com quem deseja ser atendido.</p>
+
+      <div class="selecao-grid cols-3">
+        <div class="selecao-item" data-prof="norberto" onclick="selecionarProfissional(this)">
+          <div class="prof-foto"><i class="fa-solid fa-user"></i></div>
+          <div class="prof-num">01 —</div>
+          <div class="prof-nome-sel">Norberto Junior</div>
+          <div class="prof-esp-sel">Especialista em Cortes</div>
+        </div>
+
+        <div class="selecao-item" data-prof="lucas" onclick="selecionarProfissional(this)">
+          <div class="prof-foto"><i class="fa-solid fa-user"></i></div>
+          <div class="prof-num">02 —</div>
+          <div class="prof-nome-sel">Lucas Dias</div>
+          <div class="prof-esp-sel">Especialista em Barba</div>
+        </div>
+
+        <div class="selecao-item" data-prof="jorge" onclick="selecionarProfissional(this)">
+          <div class="prof-foto"><i class="fa-solid fa-user"></i></div>
+          <div class="prof-num">03 —</div>
+          <div class="prof-nome-sel">Jorge Sampaio</div>
+          <div class="prof-esp-sel">Design e Acabamento</div>
+        </div>
+      </div>
+
+      <div class="msg-erro" id="erro-2">Por favor, selecione um profissional antes de continuar.</div>
+      <div class="nav-etapas">
+        <button class="btn-voltar" onclick="voltar(2)">
+          <i class="fa-solid fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn-avancar" onclick="avancar(2)">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ETAPA 3 — DATA E HORA -->
+    <div class="etapa" id="etapa-3">
+      <h2 class="etapa-titulo">Quando você prefere?</h2>
+      <p class="etapa-sub">Escolha a data e o horário disponível.</p>
+
+      <div class="data-horario-grid">
+        <div class="campo-grupo">
+          <label>Data do agendamento</label>
+          <input type="date" class="campo-input" id="input-data" min="" />
+        </div>
+        <div class="campo-grupo">
+          <label>Seu nome completo</label>
+          <input type="text" class="campo-input" id="input-nome" placeholder="Ex: João Silva" />
+        </div>
+        <div class="campo-grupo">
+          <label>E-mail</label>
+          <input type="email" class="campo-input" id="input-email" placeholder="seu@email.com" />
+        </div>
+        <div class="campo-grupo">
+          <label>WhatsApp / Telefone</label>
+          <input type="tel" class="campo-input" id="input-tel" placeholder="(11) 99999-0000" />
+        </div>
+      </div>
+
+      <div class="campo-grupo" style="margin-bottom:1.5rem;">
+        <label>Horário disponível</label>
+        <div class="horarios-grid" id="horarios-grid">
+          <!-- Horários gerados via JavaScript -->
+        </div>
+      </div>
+
+
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label>Observações (opcional)</label>
+        <textarea class="campo-grupo" id="input-obs" placeholder="Ex: Prefiro corte mais curto nas laterais..."></textarea>
+      </div>
+
+      <!-- Campo de foto de referência -->
+      <div class="campo-grupo" style="margin-top:1.5rem;">
+        <label>Foto de referência <span style="color:var(--cinza);font-weight:300;text-transform:none;letter-spacing:0;">(opcional)</span></label>
+        <div class="upload-area" id="upload-area">
+          <input type="file" id="input-foto" accept="image/jpeg,image/png,image/webp" />
+          <div class="upload-icone"><i class="fa-solid fa-image"></i></div>
+          <div class="upload-texto">Arraste uma foto ou clique para selecionar</div>
+          <div class="upload-subtexto">Envie uma imagem do corte que deseja como referência</div>
+          <div class="upload-tag">JPG · PNG · WEBP · máx 5MB</div>
+        </div>
+        <div class="foto-preview" id="foto-preview">
+          <img id="foto-preview-img" src="" alt="Preview da foto" />
+          <div class="foto-preview-overlay">
+            <span class="foto-preview-nome" id="foto-preview-nome"></span>
+            <button class="foto-remover" onclick="removerFoto()">
+              <i class="fa-solid fa-xmark"></i> Remover
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg-erro" id="erro-3">Por favor, preencha todos os campos obrigatórios e selecione um horário.</div>
+      <div class="nav-etapas">
+        <button class="btn-voltar" onclick="voltar(3)">
+          <i class="fa-solid fa-arrow-left"></i> Voltar
+        </button>
+        <button class="btn-avancar" onclick="avancar(3)">
+          Revisar <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ETAPA 4 — REVISÃO -->
+    <div class="etapa" id="etapa-4">
+      <h2 class="etapa-titulo">Revise seu agendamento</h2>
+      <p class="etapa-sub">Confirme os dados antes de finalizar.</p>
+
+      <div class="resumo-box">
+        <div class="resumo-header">
+          <span class="resumo-header-titulo">Resumo do agendamento</span>
+        </div>
+        <div class="resumo-body">
+          <div class="resumo-row">
+            <span class="resumo-chave">Serviço</span>
+            <span class="resumo-valor" id="res-servico">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Profissional</span>
+            <span class="resumo-valor" id="res-profissional">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Data</span>
+            <span class="resumo-valor" id="res-data">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Horário</span>
+            <span class="resumo-valor" id="res-horario">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Cliente</span>
+            <span class="resumo-valor" id="res-nome">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Contato</span>
+            <span class="resumo-valor" id="res-contato">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Duração estimada</span>
+            <span class="resumo-valor" id="res-duracao">—</span>
+          </div>
+          <div class="resumo-row">
+            <span class="resumo-chave">Valor</span>
+            <span class="resumo-valor dourado" id="res-preco">—</span>
+          </div>
+          <div class="resumo-row" id="res-foto-row" style="display:none;">
+            <span class="resumo-chave">Foto de referência</span>
+            <span class="resumo-valor">
+              <div class="resumo-foto" id="resumo-foto">
+                <img id="resumo-foto-img" src="" alt="Referência" />
+              </div>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg-erro" id="erro-4">Ocorreu um erro ao processar o agendamento. Tente novamente.</div>
+      <div class="nav-etapas">
+        <button class="btn-voltar" onclick="voltar(4)">
+          <i class="fa-solid fa-arrow-left"></i> Editar
+        </button>
+        <button class="btn-avancar" onclick="confirmar()" id="btn-confirmar">
+          <i class="fa-solid fa-check"></i> Confirmar Agendamento
+        </button>
+      </div>
+    </div>
+
+    <!-- CONFIRMAÇÃO FINAL -->
+    <div class="confirmacao" id="confirmacao">
+      <div class="confirmacao-icone">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h2 class="confirmacao-titulo">
+        Agendamento <em>confirmado!</em>
+      </h2>
+      <p class="confirmacao-sub">
+        Seu horário foi reservado com sucesso.<br>
+        Você receberá uma confirmação em breve.<br>
+        Até lá, obrigado por escolher a <strong style="color:var(--dourado)">JL Barbearia</strong>!
+      </p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href="index.html" class="btn-avancar" style="text-decoration:none;">
+          <i class="fa-solid fa-house"></i> Voltar ao início
+        </a>
+        <a href="login.html" class="btn-voltar" style="text-decoration:none;">
+          <i class="fa-solid fa-user"></i> Minha conta
+        </a>
+      </div>
+    </div>
+
+  </div><!-- fim .agendar-container -->
+
+  <script>
+    // ── Estado do agendamento ───────────────────
+    const estado = {
+      etapaAtual:    1,
+      servico:       null,
+      servicoNome:   null,
+      servicoPreco:  null,
+      servicoDuracao:null,
+      profissional:  null,
+      profNome:      null,
+      data:          null,
+      horario:       null,
+      nome:          null,
+      email:         null,
+      tel:           null,
+      obs:           null
+    };
+
+    // ── Data mínima = hoje ──────────────────────
+    const hoje = new Date();
+    const dataMin = hoje.toISOString().split('T')[0];
+    document.getElementById('input-data').min = dataMin;
+    document.getElementById('input-data').value = dataMin;
+    document.getElementById('input-data').addEventListener('change', gerarHorarios);
+
+    // ── Gerar horários disponíveis ──────────────
+    function gerarHorarios() {
+      const grid = document.getElementById('horarios-grid');
+      const horariosTodos = [
+        '09:00','09:30','10:00','10:30','11:00','11:30',
+        '13:00','13:30','14:00','14:30','15:00','15:30',
+        '16:00','16:30','17:00','17:30','18:00','18:30'
+      ];
+      // Simula alguns ocupados aleatoriamente
+      const ocupados = ['10:00','14:30','16:00'];
+      grid.innerHTML = '';
+      horariosTodos.forEach(h => {
+        const btn = document.createElement('button');
+        btn.className = 'horario-btn';
+        btn.textContent = h;
+        if (ocupados.includes(h)) {
+          btn.disabled = true;
+          btn.title = 'Horário indisponível';
+        } else {
+          btn.onclick = () => selecionarHorario(btn, h);
+        }
+        grid.appendChild(btn);
+      });
+      estado.horario = null;
+    }
+    gerarHorarios();
+
+    function selecionarHorario(btn, h) {
+      document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('selecionado'));
+      btn.classList.add('selecionado');
+      estado.horario = h;
+    }
+
+    // ── Seleção de serviço ─────────────────────
+    function selecionarServico(el) {
+      document.querySelectorAll('#etapa-1 .selecao-item').forEach(i => i.classList.remove('selecionado'));
+      el.classList.add('selecionado');
+      estado.servico       = el.dataset.servico;
+      estado.servicoNome   = el.querySelector('.servico-nome-sel').textContent;
+      estado.servicoPreco  = el.dataset.preco;
+      estado.servicoDuracao= el.dataset.duracao;
+    }
+
+    // ── Seleção de profissional ─────────────────
+    function selecionarProfissional(el) {
+      document.querySelectorAll('#etapa-2 .selecao-item').forEach(i => i.classList.remove('selecionado'));
+      el.classList.add('selecionado');
+      estado.profissional = el.dataset.prof;
+      estado.profNome     = el.querySelector('.prof-nome-sel').textContent;
+    }
+
+    // ── Navegação entre etapas ──────────────────
+    function avancar(etapa) {
+      // Validações
+      if (etapa === 1 && !estado.servico) {
+        mostrarErro('erro-1'); return;
+      }
+      if (etapa === 2 && !estado.profissional) {
+        mostrarErro('erro-2'); return;
+      }
+      if (etapa === 3) {
+        const nome  = document.getElementById('input-nome').value.trim();
+        const email = document.getElementById('input-email').value.trim();
+        const tel   = document.getElementById('input-tel').value.trim();
+        if (!nome || !email || !tel || !estado.horario || !document.getElementById('input-data').value) {
+          mostrarErro('erro-3'); return;
+        }
+        estado.nome  = nome;
+        estado.email = email;
+        estado.tel   = tel;
+        estado.data  = document.getElementById('input-data').value;
+        estado.obs   = document.getElementById('input-obs').value;
+        preencherResumo();
+      }
+      esconderErros();
+      irParaEtapa(etapa + 1);
+    }
+
+    function voltar(etapa) {
+      esconderErros();
+      irParaEtapa(etapa - 1);
+    }
+
+    function irParaEtapa(nova) {
+      // Esconde etapa atual
+      document.querySelector('.etapa.ativa')?.classList.remove('ativa');
+      document.getElementById(`etapa-${nova}`)?.classList.add('ativa');
+      estado.etapaAtual = nova;
+      atualizarSteps(nova);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function atualizarSteps(atual) {
+      for (let i = 1; i <= 4; i++) {
+        const step = document.getElementById(`step-${i}`);
+        step.classList.remove('ativo', 'concluido');
+        if (i < atual)       step.classList.add('concluido');
+        else if (i === atual) step.classList.add('ativo');
+
+        // Atualiza ícone dos concluídos
+        const num = step.querySelector('.step-num');
+        if (i < atual) num.innerHTML = '<i class="fa-solid fa-check" style="font-size:0.7rem"></i>';
+        else           num.textContent = i;
+
+        // Linha de progresso
+        const linha = document.getElementById(`linha-${i}`);
+        if (linha) linha.style.width = i < atual ? '100%' : '0%';
+      }
+    }
+
+    // ── Preencher resumo ───────────────────────
+    function preencherResumo() {
+      document.getElementById('res-servico').textContent     = estado.servicoNome;
+      document.getElementById('res-profissional').textContent= estado.profNome;
+      document.getElementById('res-data').textContent        = formatarData(estado.data);
+      document.getElementById('res-horario').textContent     = estado.horario;
+      document.getElementById('res-nome').textContent        = estado.nome;
+      document.getElementById('res-contato').textContent     = `${estado.email} · ${estado.tel}`;
+      document.getElementById('res-duracao').textContent     = `${estado.servicoDuracao} minutos`;
+      document.getElementById('res-preco').textContent       = `R$ ${estado.servicoPreco}`;
+    }
+
+    function formatarData(str) {
+      const [a, m, d] = str.split('-');
+      const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      return `${d} de ${meses[parseInt(m)-1]} de ${a}`;
+    }
+
+    // ── Confirmar agendamento ───────────────────
+    async function confirmar() {
+      const btn = document.getElementById('btn-confirmar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Aguarde...';
+
+      try {
+        // Monta payload para o backend
+        const payload = {
+          servicoId:      estado.servico,
+          profissionalId: estado.profissional,
+          data:           estado.data,
+          horario:        estado.horario,
+          observacoes:    estado.obs || '',
+          cliente: {
+            nome:  estado.nome,
+            email: estado.email,
+            tel:   estado.tel
+          }
+        };
+
+        // Envia para a API do backend
+        const resposta = await fetch('http://localhost:3000/api/agendamentos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (resposta.ok) {
+          // Sucesso: exibe confirmação
+          document.getElementById('etapa-4').classList.remove('ativa');
+          document.getElementById('confirmacao').classList.add('ativa');
+          document.querySelectorAll('.step').forEach(s => {
+            s.classList.remove('ativo');
+            s.classList.add('concluido');
+            s.querySelector('.step-num').innerHTML = '<i class="fa-solid fa-check" style="font-size:0.7rem"></i>';
+          });
+          document.querySelectorAll('.step-linha-fill').forEach(l => l.style.width = '100%');
+        } else {
+          throw new Error('Erro na API');
+        }
+      } catch (e) {
+        // Temporariamente: mostra confirmação mesmo sem backend rodando
+        document.getElementById('etapa-4').classList.remove('ativa');
+        document.getElementById('confirmacao').classList.add('ativa');
+      }
+    }
+
+    // ── Utilitários ─────────────────────────────
+    function mostrarErro(id) {
+      document.getElementById(id).classList.add('visivel');
+    }
+    function esconderErros() {
+      document.querySelectorAll('.msg-erro').forEach(e => e.classList.remove('visivel'));
+    }
+
+    // ── Upload de foto de referência ────────────
+    const inputFoto    = document.getElementById('input-foto');
+    const uploadArea   = document.getElementById('upload-area');
+    const fotoPreview  = document.getElementById('foto-preview');
+    const fotoImg      = document.getElementById('foto-preview-img');
+    const fotoNome     = document.getElementById('foto-preview-nome');
+    let   fotoBase64   = null;
+
+    inputFoto.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) processarFoto(file);
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadArea.classList.add('arrastando');
+    });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('arrastando');
+    });
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadArea.classList.remove('arrastando');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) processarFoto(file);
+    });
+
+    function processarFoto(file) {
+      // Valida tamanho (máx 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('A imagem deve ter no máximo 5MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        fotoBase64 = e.target.result;
+        fotoImg.src    = fotoBase64;
+        fotoNome.textContent = file.name;
+        fotoPreview.classList.add('visivel');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removerFoto() {
+      fotoBase64 = null;
+      fotoImg.src = '';
+      fotoNome.textContent = '';
+      fotoPreview.classList.remove('visivel');
+      inputFoto.value = '';
+    }
+
+    // Atualiza preencherResumo para incluir foto
+    const _preencherResumo = preencherResumo;
+    preencherResumo = function() {
+      _preencherResumo();
+      const row = document.getElementById('res-foto-row');
+      const resumoFoto = document.getElementById('resumo-foto');
+      const resumoFotoImg = document.getElementById('resumo-foto-img');
+      if (fotoBase64) {
+        row.style.display = 'flex';
+        resumoFoto.classList.add('visivel');
+        resumoFotoImg.src = fotoBase64;
+      } else {
+        row.style.display = 'none';
+        resumoFoto.classList.remove('visivel');
+      }
+    };
+  </script>
+</body>
+</html>

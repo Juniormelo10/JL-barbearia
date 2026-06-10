@@ -1,13 +1,1461 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JL Barbearia</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JL Barbearia — Estilo e Precisão</title>
+
+  <!-- Fontes premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* ═══════════════════════════════════════════
+       VARIÁVEIS E RESET
+    ═══════════════════════════════════════════ */
+    :root {
+      --preto:       #0A0A0A;
+      --preto-card:  #111111;
+      --preto-borda: #1E1E1E;
+      --dourado:     #C9A84C;
+      --dourado-claro: #E2C06A;
+      --dourado-escuro: #9A7A2E;
+      --branco:      #F5F0E8;
+      --cinza:       #888888;
+      --cinza-claro: #CCCCCC;
+      --fonte-display: 'Cormorant Garamond', serif;
+      --fonte-body:    'Outfit', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--preto);
+      color: var(--branco);
+      font-family: var(--fonte-body);
+      overflow-x: hidden;
+      cursor: auto;
+    }
+
+    /* ── Cursor personalizado ── */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--dourado);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+      transform: translate(-50%, -50%);
+      display: none !important;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(201,168,76,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.4s ease, width 0.3s, height 0.3s, opacity 0.3s;
+      transform: translate(-50%, -50%);
+      display: none !important;
+    }
+    body:hover .cursor { opacity: 1; }
+    a:hover ~ .cursor, button:hover ~ .cursor { transform: translate(-50%,-50%) scale(2); }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.5rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.4s ease;
+    }
+
+    header.scrolled {
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--preto-borda);
+      padding: 1rem 5%;
+    }
+
+    /* Logo */
+    .logo {
+      font-family: var(--fonte-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--branco);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo span { color: var(--dourado); }
+    .logo i { color: var(--dourado); font-size: 1.2rem; }
+
+    /* Navegação */
+    nav { display: flex; align-items: center; gap: 2.5rem; }
+
+    nav a {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--cinza-claro);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      position: relative;
+      transition: color 0.3s;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--dourado);
+      transition: width 0.3s ease;
+    }
+    nav a:hover { color: var(--dourado); }
+    nav a:hover::after { width: 100%; }
+
+    /* Botão agendar no header */
+    .btn-header {
+      font-family: var(--fonte-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--preto);
+      background: var(--dourado);
+      border: none;
+      padding: 0.75rem 1.8rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.2s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-header:hover {
+      background: var(--dourado-claro);
+      transform: translateY(-1px);
+    }
+
+    /* Menu hamburguer */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 1.5px;
+      background: var(--branco);
+      transition: all 0.3s;
+    }
+    .hamburger.ativo span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.ativo span:nth-child(2) { opacity: 0; }
+    .hamburger.ativo span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    /* Menu mobile */
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--preto);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .nav-mobile.ativo { display: flex; }
+    .nav-mobile a {
+      font-family: var(--fonte-display);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--branco);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+    .nav-mobile a:hover { color: var(--dourado); }
+
+    /* ═══════════════════════════════════════════
+       HERO — PARALLAX
+    ═══════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Camada de fundo parallax */
+    .hero-bg {
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 60%, rgba(201,168,76,0.05) 0%, transparent 60%),
+        linear-gradient(160deg, #0A0A0A 0%, #111108 50%, #0A0A0A 100%);
+      will-change: transform;
+    }
+
+    /* Textura de ruído */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Linha decorativa diagonal */
+    .hero-line {
+      position: absolute;
+      top: 0; right: 15%;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.3), transparent);
+      pointer-events: none;
+    }
+    .hero-line-2 {
+      position: absolute;
+      top: 0; left: 25%;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.1), transparent);
+      pointer-events: none;
+    }
+
+    /* Número decorativo grande */
+    .hero-deco-num {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--fonte-display);
+      font-size: clamp(8rem, 15vw, 18rem);
+      font-weight: 700;
+      color: rgba(201,168,76,0.04);
+      line-height: 1;
+      pointer-events: none;
+      letter-spacing: -0.05em;
+      user-select: none;
+    }
+
+    /* Conteúdo hero */
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+      padding: 0 2rem;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      margin-bottom: 2rem;
+    }
+    .hero-tag::before,
+    .hero-tag::after {
+      content: '';
+      width: 40px; height: 1px;
+      background: var(--dourado);
+      opacity: 0.6;
+    }
+
+    .hero-titulo {
+      font-family: var(--fonte-display);
+      font-size: clamp(3.5rem, 7vw, 7rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--branco);
+      margin-bottom: 1.5rem;
+    }
+    .hero-titulo em {
+      font-style: italic;
+      color: var(--dourado);
+    }
+    .hero-titulo strong {
+      font-weight: 700;
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--cinza);
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 3rem;
+      letter-spacing: 0.02em;
+    }
+
+    /* Botões hero */
+    .hero-btns {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primario {
+      font-family: var(--fonte-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--preto);
+      background: var(--dourado);
+      border: none;
+      padding: 1.1rem 2.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    }
+    .btn-primario::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+    .btn-primario:hover { transform: translateY(-2px); }
+    .btn-primario:hover::before { transform: translateX(100%); }
+
+    .btn-secundario {
+      font-family: var(--fonte-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--branco);
+      background: transparent;
+      border: 1px solid rgba(245,240,232,0.3);
+      padding: 1.1rem 2.5rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.3s, color 0.3s, transform 0.3s;
+    }
+    .btn-secundario:hover {
+      border-color: var(--dourado);
+      color: var(--dourado);
+      transform: translateY(-2px);
+    }
+
+    /* Contadores hero */
+    .hero-stats {
+      position: absolute;
+      bottom: 3rem;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      z-index: 2;
+    }
+    .stat {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s ease forwards;
+    }
+    .stat:nth-child(1) { animation-delay: 1.2s; }
+    .stat:nth-child(2) { animation-delay: 1.4s; }
+    .stat:nth-child(3) { animation-delay: 1.6s; }
+
+    .stat-num {
+      font-family: var(--fonte-display);
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--dourado);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-top: 0.4rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       ANIMAÇÕES GERAIS
+    ═══════════════════════════════════════════ */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visivel {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* Título de seção padrão */
+    .secao-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      margin-bottom: 1rem;
+    }
+    .secao-tag::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--dourado);
+    }
+
+    .secao-titulo {
+      font-family: var(--fonte-display);
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--branco);
+      margin-bottom: 1.5rem;
+    }
+    .secao-titulo em { font-style: italic; color: var(--dourado); }
+
+    .secao-divisor {
+      width: 0;
+      height: 1px;
+      background: linear-gradient(to right, var(--dourado), transparent);
+      margin-bottom: 4rem;
+      transition: width 1.2s ease;
+    }
+    .secao-divisor.visivel { width: 80px; }
+
+    /* ═══════════════════════════════════════════
+       SEÇÃO — SOBRE / INTRO
+    ═══════════════════════════════════════════ */
+    .sobre {
+      padding: 8rem 5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .sobre-texto p {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.9;
+      color: var(--cinza-claro);
+      margin-bottom: 1.5rem;
+    }
+
+    .sobre-destaques {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    .destaque-item {
+      border-left: 1px solid var(--dourado);
+      padding-left: 1rem;
+    }
+    .destaque-item strong {
+      display: block;
+      font-family: var(--fonte-display);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--dourado);
+      line-height: 1;
+    }
+    .destaque-item span {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--cinza);
+      text-transform: uppercase;
+    }
+
+    /* Box visual da direita */
+    .sobre-visual {
+      position: relative;
+    }
+    .sobre-box {
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .sobre-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(to right, var(--dourado), transparent);
+    }
+    .sobre-box-quote {
+      font-family: var(--fonte-display);
+      font-size: 1.4rem;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--branco);
+      margin-bottom: 2rem;
+    }
+    .sobre-box-quote::before {
+      content: '"';
+      display: block;
+      font-size: 4rem;
+      color: var(--dourado);
+      line-height: 0.8;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+    .sobre-box-autor {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dourado);
+    }
+    .sobre-box-deco {
+      position: absolute;
+      bottom: -1rem; right: -1rem;
+      font-family: var(--fonte-display);
+      font-size: 8rem;
+      font-weight: 700;
+      color: rgba(201,168,76,0.05);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    /* ═══════════════════════════════════════════
+       SEÇÃO — SERVIÇOS
+    ═══════════════════════════════════════════ */
+    .servicos {
+      padding: 8rem 5%;
+      background: var(--preto-card);
+      border-top: 1px solid var(--preto-borda);
+      border-bottom: 1px solid var(--preto-borda);
+    }
+    .servicos-inner { max-width: 1300px; margin: 0 auto; }
+    .servicos-header { margin-bottom: 1rem; }
+
+    .servicos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5px;
+      background: var(--preto-borda);
+      border: 1px solid var(--preto-borda);
+      margin-top: 4rem;
+    }
+
+    .servico-card {
+      background: var(--preto-card);
+      padding: 2.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+      cursor: pointer;
+    }
+    .servico-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 0;
+      background: linear-gradient(to bottom, rgba(201,168,76,0.06), transparent);
+      transition: height 0.4s ease;
+    }
+    .servico-card:hover { background: #141414; }
+    .servico-card:hover::before { height: 100%; }
+
+    .servico-num {
+      font-family: var(--fonte-display);
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: rgba(201,168,76,0.12);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      transition: color 0.4s;
+    }
+    .servico-card:hover .servico-num { color: rgba(201,168,76,0.2); }
+
+    .servico-icon {
+      width: 42px; height: 42px;
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.4s, background 0.4s;
+    }
+    .servico-card:hover .servico-icon {
+      border-color: var(--dourado);
+      background: rgba(201,168,76,0.08);
+    }
+    .servico-icon i { color: var(--dourado); font-size: 0.9rem; }
+
+    .servico-nome {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--branco);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+    .servico-desc {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--cinza);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .servico-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--preto-borda);
+      padding-top: 1.2rem;
+      margin-top: auto;
+    }
+    .servico-preco {
+      font-family: var(--fonte-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--dourado);
+    }
+    .servico-duracao {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--cinza);
+      text-transform: uppercase;
+    }
+    .servico-link {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .servico-card:hover .servico-link {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ═══════════════════════════════════════════
+       SEÇÃO — EQUIPE
+    ═══════════════════════════════════════════ */
+    .equipe {
+      padding: 8rem 5%;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .equipe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .profissional-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      group: true;
+    }
+
+    .profissional-foto {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: var(--preto-card);
+      border: 1px solid var(--preto-borda);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s;
+    }
+    .profissional-card:hover .profissional-foto {
+      border-color: rgba(201,168,76,0.4);
+    }
+
+    .profissional-foto::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(10,10,10,0.8) 100%);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .profissional-card:hover .profissional-foto::before { opacity: 1; }
+
+    .profissional-avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--preto-borda), #222);
+      border: 1px solid rgba(201,168,76,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.4s, border-color 0.4s;
+    }
+    .profissional-card:hover .profissional-avatar {
+      transform: scale(1.05);
+      border-color: var(--dourado);
+    }
+    .profissional-avatar i {
+      font-size: 2.5rem;
+      color: var(--dourado);
+      opacity: 0.7;
+    }
+
+    /* Overlay com detalhes no hover */
+    .profissional-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.5rem;
+      z-index: 3;
+      transform: translateY(100%);
+      transition: transform 0.4s ease;
+    }
+    .profissional-card:hover .profissional-overlay {
+      transform: translateY(0);
+    }
+    .profissional-overlay-link {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      text-decoration: none;
+      text-align: center;
+      padding: 0.8rem;
+      border: 1px solid rgba(201,168,76,0.5);
+      background: rgba(10,10,10,0.8);
+      backdrop-filter: blur(10px);
+      transition: background 0.3s;
+    }
+    .profissional-overlay-link:hover { background: rgba(201,168,76,0.15); }
+
+    .profissional-info {
+      padding: 1.5rem 0 0;
+    }
+    .profissional-num {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--dourado);
+      margin-bottom: 0.4rem;
+    }
+    .profissional-nome {
+      font-family: var(--fonte-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--branco);
+      margin-bottom: 0.3rem;
+    }
+    .profissional-esp {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cinza);
+    }
+
+    /* ═══════════════════════════════════════════
+       SEÇÃO — CTA AGENDAMENTO
+    ═══════════════════════════════════════════ */
+    .cta {
+      padding: 8rem 5%;
+      background: var(--preto-card);
+      border-top: 1px solid var(--preto-borda);
+      border-bottom: 1px solid var(--preto-borda);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-titulo {
+      font-family: var(--fonte-display);
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--branco);
+      margin-bottom: 1.5rem;
+    }
+    .cta-titulo em { font-style: italic; color: var(--dourado); }
+    .cta-sub {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--cinza);
+      margin-bottom: 3rem;
+      line-height: 1.8;
+    }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════ */
+    footer {
+      padding: 5rem 5% 2rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem;
+      padding-bottom: 4rem;
+      border-bottom: 1px solid var(--preto-borda);
+      margin-bottom: 2rem;
+    }
+    .footer-logo {
+      font-family: var(--fonte-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--branco);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .footer-logo span { color: var(--dourado); }
+    .footer-desc {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--cinza);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .footer-social { display: flex; gap: 1rem; }
+    .footer-social a {
+      width: 36px; height: 36px;
+      border: 1px solid var(--preto-borda);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cinza);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .footer-social a:hover { border-color: var(--dourado); color: var(--dourado); }
+
+    .footer-col-titulo {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--branco);
+      margin-bottom: 1.5rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.8rem; }
+    .footer-col ul li a {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--cinza);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-col ul li a:hover { color: var(--dourado); }
+
+    .footer-contato-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .footer-contato-item i {
+      color: var(--dourado);
+      font-size: 0.8rem;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+    .footer-contato-item span {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--cinza);
+      line-height: 1.6;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-bottom p {
+      font-size: 0.75rem;
+      color: var(--cinza);
+      letter-spacing: 0.05em;
+    }
+    .footer-bottom span {
+      font-size: 0.75rem;
+      color: rgba(201,168,76,0.5);
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVIDADE
+    ═══════════════════════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .servicos-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
+    }
+
+    @media (max-width: 900px) {
+      .sobre { grid-template-columns: 1fr; gap: 3rem; }
+      .equipe-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      nav, .btn-header { display: none; }
+      .hamburger { display: flex; }
+      .hero-stats { gap: 2rem; }
+      .hero-deco-num { display: none; }
+      .servicos-grid { grid-template-columns: 1fr; }
+      .equipe-grid { grid-template-columns: 1fr; max-width: 400px; margin: 4rem auto 0; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .sobre-destaques { grid-template-columns: 1fr 1fr; }
+      .hero-stats { flex-wrap: wrap; gap: 1.5rem; bottom: 1.5rem; }
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-titulo { font-size: 2.8rem; }
+      .hero-btns { flex-direction: column; align-items: center; }
+      .btn-primario, .btn-secundario { width: 100%; text-align: center; }
+      .sobre-destaques { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-    <h1>JL Barbearia</h1>
-    <script src="js/main.js"></script>
+
+  <!-- Cursor personalizado -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ══════════════════════════════
+       HEADER
+  ══════════════════════════════ -->
+  <header id="header">
+    <a href="#inicio" class="logo">
+      <i class="fa-solid fa-scissors"></i>
+      JL <span>Barbearia</span>
+    </a>
+
+    <nav>
+      <a href="#inicio">Início</a>
+      <a href="#servicos">Serviços</a>
+      <a href="#equipe">Equipe</a>
+      <a href="agendamento.html">Agendamento</a>
+      <a href="login.html">Minha Conta</a>
+      <a href="agendamento.html" class="btn-header">Agendar Agora</a>
+    </nav>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Menu mobile -->
+  <div class="nav-mobile" id="navMobile">
+    <a href="#inicio" onclick="fecharMenu()">Início</a>
+    <a href="#servicos" onclick="fecharMenu()">Serviços</a>
+    <a href="#equipe" onclick="fecharMenu()">Equipe</a>
+    <a href="agendamento.html">Agendar Agora</a>
+  </div>
+
+  <!-- ══════════════════════════════
+       HERO — PARALLAX
+  ══════════════════════════════ -->
+  <section class="hero" id="inicio">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-line"></div>
+    <div class="hero-line-2"></div>
+    <div class="hero-deco-num">JL</div>
+
+    <div class="hero-content">
+      <div class="hero-tag">Experiência Premium</div>
+
+      <h1 class="hero-titulo">
+        Estilo e <em>precisão</em>
+        <strong>em cada corte</strong>
+      </h1>
+
+      <p class="hero-sub">
+        Agende seu horário online com os melhores profissionais
+        e viva a experiência de uma barbearia de alto padrão.
+      </p>
+
+      <div class="hero-btns">
+        <a href="agendamento.html" class="btn-primario">Agendar Agora</a>
+        <a href="#servicos" class="btn-secundario">Ver Serviços</a>
+      </div>
+    </div>
+
+    <!-- Estatísticas animadas -->
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" data-target="500">0</div>
+        <div class="stat-label">Clientes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="5">0</div>
+        <div class="stat-label">Anos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="3">0</div>
+        <div class="stat-label">Profissionais</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       SOBRE
+  ══════════════════════════════ -->
+  <section style="background: var(--preto); border-top: 1px solid var(--preto-borda);">
+    <div class="sobre">
+      <!-- Texto esquerda -->
+      <div>
+        <div class="secao-tag reveal">Nossa História</div>
+        <h2 class="secao-titulo reveal reveal-delay-1">
+          Tradição e <em>modernidade</em><br>em harmonia
+        </h2>
+        <div class="secao-divisor reveal reveal-delay-2"></div>
+
+        <p class="reveal reveal-delay-2" style="font-size:1rem;font-weight:300;color:var(--cinza-claro);line-height:1.9;margin-bottom:1.5rem;">
+          A JL Barbearia nasceu da paixão pelo artesanato do corte masculino. Combinamos técnicas tradicionais com as tendências mais modernas para oferecer uma experiência única.
+        </p>
+        <p class="reveal reveal-delay-3" style="font-size:1rem;font-weight:300;color:var(--cinza);line-height:1.9;">
+          Cada detalhe é pensado para que você saia diferente — mais confiante, mais elegante, mais você.
+        </p>
+
+        <div class="sobre-destaques reveal reveal-delay-3">
+          <div class="destaque-item">
+            <strong>500+</strong>
+            <span>Clientes atendidos</span>
+          </div>
+          <div class="destaque-item">
+            <strong>5</strong>
+            <span>Anos de experiência</span>
+          </div>
+          <div class="destaque-item">
+            <strong>100%</strong>
+            <span>Satisfação garantida</span>
+          </div>
+          <div class="destaque-item">
+            <strong>3</strong>
+            <span>Especialistas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Box visual direita -->
+      <div class="sobre-visual reveal reveal-delay-2">
+        <div class="sobre-box">
+          <p class="sobre-box-quote">
+            Não cortamos apenas cabelo. Construímos confiança, um corte de cada vez.
+          </p>
+          <span class="sobre-box-autor">— JL Barbearia, desde 2019</span>
+          <div class="sobre-box-deco">JL</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       SERVIÇOS
+  ══════════════════════════════ -->
+  <section class="servicos" id="servicos">
+    <div class="servicos-inner">
+      <div class="servicos-header">
+        <div class="secao-tag reveal">O que oferecemos</div>
+        <h2 class="secao-titulo reveal reveal-delay-1">
+          Nossos <em>Serviços</em>
+        </h2>
+        <div class="secao-divisor reveal reveal-delay-2"></div>
+      </div>
+
+      <div class="servicos-grid">
+
+        <!-- Corte Masculino -->
+        <div class="servico-card reveal">
+          <div class="servico-num">01</div>
+          <div class="servico-icon"><i class="fa-solid fa-scissors"></i></div>
+          <h3 class="servico-nome">Corte Masculino</h3>
+          <p class="servico-desc">Acabamento fino, modelagem personalizada e estilo autêntico para cada perfil.</p>
+          <div class="servico-footer">
+            <span class="servico-preco">R$ 45</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+              <span class="servico-duracao">30 min</span>
+              <a href="agendamento.html" class="servico-link">Agendar <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barba -->
+        <div class="servico-card reveal reveal-delay-1">
+          <div class="servico-num">02</div>
+          <div class="servico-icon"><i class="fa-solid fa-face-smile"></i></div>
+          <h3 class="servico-nome">Barba</h3>
+          <p class="servico-desc">Desenho preciso e finalização com produtos premium para um visual elegante e alinhado.</p>
+          <div class="servico-footer">
+            <span class="servico-preco">R$ 35</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+              <span class="servico-duracao">25 min</span>
+              <a href="agendamento.html" class="servico-link">Agendar <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corte + Barba -->
+        <div class="servico-card reveal reveal-delay-2">
+          <div class="servico-num">03</div>
+          <div class="servico-icon"><i class="fa-solid fa-star"></i></div>
+          <h3 class="servico-nome">Corte + Barba</h3>
+          <p class="servico-desc">Pacote completo de transformação com corte moderno e barba desenhada com perfeição.</p>
+          <div class="servico-footer">
+            <span class="servico-preco">R$ 70</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+              <span class="servico-duracao">50 min</span>
+              <a href="agendamento.html" class="servico-link">Agendar <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sobrancelha -->
+        <div class="servico-card reveal reveal-delay-3">
+          <div class="servico-num">04</div>
+          <div class="servico-icon"><i class="fa-solid fa-eye"></i></div>
+          <h3 class="servico-nome">Sobrancelha</h3>
+          <p class="servico-desc">Design de sobrancelhas que valoriza seu rosto com precisão, estilo e naturalidade.</p>
+          <div class="servico-footer">
+            <span class="servico-preco">R$ 25</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+              <span class="servico-duracao">15 min</span>
+              <a href="agendamento.html" class="servico-link">Agendar <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       EQUIPE
+  ══════════════════════════════ -->
+  <section style="padding: 8rem 5%; background: var(--preto);" id="equipe">
+    <div style="max-width:1300px;margin:0 auto;">
+      <div class="secao-tag reveal">Conheça quem faz</div>
+      <h2 class="secao-titulo reveal reveal-delay-1">Nossa <em>Equipe</em></h2>
+      <div class="secao-divisor reveal reveal-delay-2"></div>
+
+      <div class="equipe-grid">
+
+        <!-- Profissional 1 -->
+        <div class="profissional-card reveal">
+          <div class="profissional-foto">
+            <div class="profissional-avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="profissional-overlay">
+              <a href="agendamento.html" class="profissional-overlay-link">
+                Agendar com ele
+              </a>
+            </div>
+          </div>
+          <div class="profissional-info">
+            <div class="profissional-num">01 —</div>
+            <h3 class="profissional-nome">Norberto Junior</h3>
+            <p class="profissional-esp">Especialista em Cortes</p>
+          </div>
+        </div>
+
+        <!-- Profissional 2 -->
+        <div class="profissional-card reveal reveal-delay-1">
+          <div class="profissional-foto">
+            <div class="profissional-avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="profissional-overlay">
+              <a href="agendamento.html" class="profissional-overlay-link">
+                Agendar com ele
+              </a>
+            </div>
+          </div>
+          <div class="profissional-info">
+            <div class="profissional-num">02 —</div>
+            <h3 class="profissional-nome">Lucas Dias</h3>
+            <p class="profissional-esp">Especialista em Barba</p>
+          </div>
+        </div>
+
+        <!-- Profissional 3 -->
+        <div class="profissional-card reveal reveal-delay-2">
+          <div class="profissional-foto">
+            <div class="profissional-avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="profissional-overlay">
+              <a href="agendamento.html" class="profissional-overlay-link">
+                Agendar com ele
+              </a>
+            </div>
+          </div>
+          <div class="profissional-info">
+            <div class="profissional-num">03 —</div>
+            <h3 class="profissional-nome">Jorge Sampaio</h3>
+            <p class="profissional-esp">Design e Acabamento</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       CTA AGENDAMENTO
+  ══════════════════════════════ -->
+  <section class="cta">
+    <div class="cta-inner">
+      <div class="secao-tag reveal" style="justify-content:center;">Reserve seu horário</div>
+      <h2 class="cta-titulo reveal reveal-delay-1">
+        Pronto para um<br><em>novo visual?</em>
+      </h2>
+      <p class="cta-sub reveal reveal-delay-2">
+        Agende online em menos de 2 minutos. Escolha o serviço,<br>
+        o profissional e o horário que melhor se encaixa na sua rotina.
+      </p>
+      <div class="cta-btns reveal reveal-delay-3">
+        <a href="agendamento.html" class="btn-primario">Agendar Agora</a>
+        <a href="login.html" class="btn-secundario">Minha Conta</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       FOOTER
+  ══════════════════════════════ -->
+  <footer style="background: var(--preto-card); border-top: 1px solid var(--preto-borda); padding: 5rem 5% 2rem;">
+    <div style="max-width:1300px;margin:0 auto;">
+      <div class="footer-grid">
+
+        <!-- Coluna 1 — Marca -->
+        <div>
+          <div class="footer-logo">
+            <i class="fa-solid fa-scissors" style="color:var(--dourado);"></i>
+            JL <span>Barbearia</span>
+          </div>
+          <p class="footer-desc">
+            Barbearia moderna com estilo premium. Atendemos com sofisticação,
+            cuidado e acabamento exclusivo em cada serviço desde 2019.
+          </p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <!-- Coluna 2 — Links -->
+        <div class="footer-col">
+          <h4 class="footer-col-titulo">Navegação</h4>
+          <ul>
+            <li><a href="#inicio">Início</a></li>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="#equipe">Equipe</a></li>
+            <li><a href="agendamento.html">Agendamento</a></li>
+            <li><a href="login.html">Minha Conta</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3 — Serviços -->
+        <div class="footer-col">
+          <h4 class="footer-col-titulo">Serviços</h4>
+          <ul>
+            <li><a href="agendamento.html">Corte Masculino</a></li>
+            <li><a href="agendamento.html">Barba</a></li>
+            <li><a href="agendamento.html">Corte + Barba</a></li>
+            <li><a href="agendamento.html">Sobrancelha</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 4 — Contato -->
+        <div class="footer-col">
+          <h4 class="footer-col-titulo">Contato</h4>
+          <div class="footer-contato-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Rua das Flores, 123 — Centro<br>São Paulo, SP</span>
+          </div>
+          <div class="footer-contato-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>(11) 99999-0000</span>
+          </div>
+          <div class="footer-contato-item">
+            <i class="fa-solid fa-clock"></i>
+            <span>Seg–Sáb: 09h às 20h</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 JL Barbearia. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════ -->
+  <script>
+    // ── Header scroll ───────────────────────────
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── Parallax hero ───────────────────────────
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      heroBg.style.transform = `translateY(${scrollY * 0.4}px)`;
+    }, { passive: true });
+
+    // ── Menu hamburguer ─────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const navMobile = document.getElementById('navMobile');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('ativo');
+      navMobile.classList.toggle('ativo');
+    });
+
+    function fecharMenu() {
+      hamburger.classList.remove('ativo');
+      navMobile.classList.remove('ativo');
+    }
+
+    // ── Reveal ao scroll (Intersection Observer) 
+    const revealEls = document.querySelectorAll('.reveal');
+    const divisores = document.querySelectorAll('.secao-divisor');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visivel');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    revealEls.forEach(el => observer.observe(el));
+    divisores.forEach(el => observer.observe(el));
+
+    // ── Contadores animados ─────────────────────
+    const contadores = document.querySelectorAll('.stat-num[data-target]');
+
+    const contadorObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el     = entry.target;
+          const target = parseInt(el.dataset.target);
+          const suffix = target >= 500 ? '+' : '';
+          let atual    = 0;
+          const duracao = 1800;
+          const passo   = Math.ceil(target / (duracao / 16));
+
+          const contador = setInterval(() => {
+            atual = Math.min(atual + passo, target);
+            el.textContent = atual + suffix;
+            if (atual >= target) clearInterval(contador);
+          }, 16);
+
+          contadorObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    contadores.forEach(el => contadorObserver.observe(el));
+
+    // ── Scroll suave para âncoras ───────────────
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const alvo = document.querySelector(link.getAttribute('href'));
+        if (alvo) {
+          alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          fecharMenu();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

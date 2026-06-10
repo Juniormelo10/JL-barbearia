@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Admin — JL Barbearia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --preto:#0A0A0A; --preto-card:#111111; --preto-borda:#1E1E1E;
+      --dourado:#C9A84C; --dourado-claro:#E2C06A; --branco:#F5F0E8;
+      --cinza:#888888; --cinza-claro:#CCCCCC; --verde:#4CAF7D;
+      --vermelho:#e57373; --amarelo:#FFB74D; --azul:#64B5F6;
+      --fonte-display:'Cormorant Garamond',serif; --fonte-body:'Outfit',sans-serif;
+      --sidebar-w:260px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--preto);color:var(--branco);font-family:var(--fonte-body);min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{
+      position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+      background:var(--preto-card);border-right:1px solid var(--preto-borda);
+      display:flex;flex-direction:column;padding:2rem 0;z-index:100;overflow-y:auto;
+    }
+    .sidebar-logo{
+      font-family:var(--fonte-display);font-size:1.3rem;font-weight:600;color:var(--branco);
+      text-decoration:none;display:flex;align-items:center;gap:.6rem;
+      padding:0 1.8rem 2rem;border-bottom:1px solid var(--preto-borda);margin-bottom:1.5rem;
+    }
+    .sidebar-logo span{color:var(--dourado);}
+    .sidebar-logo i{color:var(--dourado);font-size:1rem;}
+    .sidebar-perfil{padding:0 1.8rem 1.5rem;border-bottom:1px solid var(--preto-borda);margin-bottom:1.5rem;}
+    .sidebar-avatar{
+      width:48px;height:48px;border-radius:50%;
+      background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.05));
+      border:1px solid rgba(201,168,76,.4);
+      display:flex;align-items:center;justify-content:center;margin-bottom:.75rem;
+    }
+    .sidebar-avatar i{color:var(--dourado);font-size:1.2rem;}
+    .sidebar-nome{font-size:.9rem;font-weight:500;color:var(--branco);margin-bottom:.2rem;}
+    .sidebar-tipo{
+      font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+      color:var(--dourado);display:flex;align-items:center;gap:.4rem;
+    }
+    .sidebar-tipo::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--verde);}
+    .sidebar-menu{flex:1;padding:0 1rem;}
+    .menu-label{font-size:.6rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--cinza);padding:0 .8rem;margin-bottom:.5rem;margin-top:1rem;}
+    .menu-item{
+      display:flex;align-items:center;gap:.75rem;padding:.75rem .8rem;border-radius:2px;
+      text-decoration:none;font-size:.82rem;font-weight:400;color:var(--cinza);
+      transition:all .3s;cursor:pointer;background:none;border:none;
+      width:100%;text-align:left;font-family:var(--fonte-body);
+    }
+    .menu-item i{font-size:.85rem;width:16px;text-align:center;}
+    .menu-item:hover{color:var(--branco);background:rgba(255,255,255,.04);}
+    .menu-item.ativo{color:var(--dourado);background:rgba(201,168,76,.08);border-left:2px solid var(--dourado);}
+    .menu-badge{margin-left:auto;background:var(--dourado);color:var(--preto);font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:10px;min-width:18px;text-align:center;}
+    .menu-badge.verde{background:var(--verde);}
+    .sidebar-footer{padding:1.5rem 1.8rem 0;border-top:1px solid var(--preto-borda);margin-top:auto;}
+    .btn-sair{display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:var(--cinza);cursor:pointer;background:none;border:none;font-family:var(--fonte-body);transition:color .3s;}
+    .btn-sair:hover{color:var(--vermelho);}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar-w);width:calc(100% - var(--sidebar-w));min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+
+    /* ── TOPBAR ── */
+    .topbar{
+      background:rgba(10,10,10,.95);backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--preto-borda);padding:1rem 2.5rem;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:50;transition:transform .3s ease;
+    }
+    .topbar-esq{display:flex;flex-direction:column;gap:.2rem;}
+    .topbar-titulo{font-family:var(--fonte-display);font-size:1.4rem;font-weight:300;color:var(--branco);}
+    .topbar-titulo span{color:var(--dourado);font-style:italic;}
+    .topbar-data{font-size:.72rem;color:var(--cinza);letter-spacing:.05em;}
+    .topbar-dir{display:flex;align-items:center;gap:1rem;}
+    .topbar-badge{
+      display:flex;align-items:center;gap:.5rem;
+      font-size:.72rem;color:var(--verde);
+      background:rgba(76,175,125,.08);border:1px solid rgba(76,175,125,.2);
+      padding:.4rem .9rem;
+    }
+    .topbar-badge i{font-size:.7rem;}
+
+    /* ── CONTEÚDO ── */
+    .conteudo{padding:2.5rem;flex:1;width:100%;box-sizing:border-box;}
+    .painel{display:none;}
+    .painel.ativo{display:block;animation:fadeIn .4s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── KPI CARDS ── */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5px;background:var(--preto-borda);border:1px solid var(--preto-borda);margin-bottom:2rem;width:100%;}
+    .kpi-card{background:var(--preto-card);padding:1.5rem;position:relative;overflow:hidden;min-width:0;}
+    .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--cor,var(--dourado)),transparent);}
+    .kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;}
+    .kpi-icon{width:36px;height:36px;border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;}
+    .kpi-icon i{font-size:.85rem;color:var(--dourado);}
+    .kpi-variacao{font-size:.68rem;font-weight:500;padding:.2rem .5rem;border-radius:2px;}
+    .kpi-variacao.pos{color:var(--verde);background:rgba(76,175,125,.1);}
+    .kpi-variacao.neg{color:var(--vermelho);background:rgba(229,115,115,.1);}
+    .kpi-num{font-family:var(--fonte-display);font-size:2.2rem;font-weight:600;color:var(--branco);line-height:1;margin-bottom:.3rem;}
+    .kpi-label{font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);}
+
+    /* ── GRID PRINCIPAL ── */
+    .dash-grid{display:grid;grid-template-columns:1fr 340px;gap:2rem;margin-bottom:2rem;}
+
+    /* ── AGENDA DO DIA ── */
+    .agenda-box{background:var(--preto-card);border:1px solid var(--preto-borda);position:relative;overflow:hidden;}
+    .agenda-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--dourado),transparent);}
+    .box-header{padding:1.5rem 2rem;border-bottom:1px solid var(--preto-borda);display:flex;align-items:center;justify-content:space-between;}
+    .box-titulo{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dourado);}
+    .box-acao{font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);cursor:pointer;background:none;border:none;font-family:var(--fonte-body);transition:color .3s;display:flex;align-items:center;gap:.4rem;}
+    .box-acao:hover{color:var(--dourado);}
+
+    /* Item de agendamento do dia */
+    .agenda-item{
+      padding:1.2rem 2rem;border-bottom:1px solid var(--preto-borda);
+      display:grid;grid-template-columns:60px 1fr auto;gap:1.5rem;align-items:center;
+      transition:background .3s;
+    }
+    .agenda-item:last-child{border-bottom:none;}
+    .agenda-item:hover{background:rgba(255,255,255,.02);}
+    .agenda-hora{font-family:var(--fonte-display);font-size:1.3rem;font-weight:600;color:var(--dourado);text-align:center;line-height:1;}
+    .agenda-hora small{display:block;font-size:.6rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);font-family:var(--fonte-body);}
+    .agenda-info{}
+    .agenda-cliente{font-size:.88rem;font-weight:500;color:var(--branco);margin-bottom:.2rem;}
+    .agenda-servico{font-size:.75rem;color:var(--cinza);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+    .agenda-servico i{color:var(--dourado);font-size:.65rem;}
+    .agenda-acoes{display:flex;flex-direction:column;gap:.4rem;align-items:flex-end;}
+    .status-badge{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .6rem;white-space:nowrap;}
+    .status-pendente{color:var(--amarelo);background:rgba(255,183,77,.1);border:1px solid rgba(255,183,77,.3);}
+    .status-confirmado{color:var(--verde);background:rgba(76,175,125,.1);border:1px solid rgba(76,175,125,.3);}
+    .status-cancelado{color:var(--vermelho);background:rgba(229,115,115,.1);border:1px solid rgba(229,115,115,.3);}
+    .status-concluido{color:var(--cinza);background:rgba(136,136,136,.1);border:1px solid rgba(136,136,136,.3);}
+    .agenda-btns{display:flex;gap:.4rem;}
+    .btn-confirmar{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--verde);background:rgba(76,175,125,.08);border:1px solid rgba(76,175,125,.3);padding:.3rem .6rem;cursor:pointer;font-family:var(--fonte-body);transition:background .3s;}
+    .btn-confirmar:hover{background:rgba(76,175,125,.15);}
+    .btn-recusar{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--vermelho);background:rgba(229,115,115,.08);border:1px solid rgba(229,115,115,.3);padding:.3rem .6rem;cursor:pointer;font-family:var(--fonte-body);transition:background .3s;}
+    .btn-recusar:hover{background:rgba(229,115,115,.15);}
+    .btn-ver-foto{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--dourado);background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);padding:.3rem .6rem;cursor:pointer;font-family:var(--fonte-body);transition:background .3s;display:flex;align-items:center;gap:.3rem;}
+    .btn-ver-foto:hover{background:rgba(201,168,76,.15);}
+
+    /* ── COLUNA DIREITA ── */
+    .col-dir{display:flex;flex-direction:column;gap:2rem;}
+
+    /* Faturamento hoje */
+    .fat-box{background:var(--preto-card);border:1px solid var(--preto-borda);position:relative;overflow:hidden;}
+    .fat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--verde),transparent);}
+    .fat-valor{font-family:var(--fonte-display);font-size:2.5rem;font-weight:600;color:var(--verde);padding:1.5rem 2rem .5rem;}
+    .fat-label{font-size:.68rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);padding:0 2rem 1.5rem;}
+
+    /* Serviços mais procurados */
+    .servicos-pop{}
+    .servico-bar{padding:.8rem 2rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--preto-borda);}
+    .servico-bar:last-child{border-bottom:none;}
+    .servico-bar-nome{font-size:.8rem;font-weight:400;color:var(--branco);min-width:100px;}
+    .servico-bar-track{flex:1;height:3px;background:var(--preto-borda);position:relative;overflow:hidden;}
+    .servico-bar-fill{height:100%;background:linear-gradient(to right,var(--dourado),var(--dourado-claro));transition:width 1s ease;}
+    .servico-bar-count{font-size:.75rem;font-weight:600;color:var(--dourado);min-width:20px;text-align:right;}
+
+    /* ── PAINEL: AGENDAMENTOS ── */
+    .filtros{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+    .filtro-btn{font-family:var(--fonte-body);font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);background:var(--preto-card);border:1px solid var(--preto-borda);padding:.5rem 1rem;cursor:pointer;transition:all .3s;}
+    .filtro-btn:hover{border-color:rgba(201,168,76,.3);color:var(--branco);}
+    .filtro-btn.ativo{border-color:var(--dourado);color:var(--dourado);background:rgba(201,168,76,.06);}
+    .secao-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+    .secao-titulo{font-family:var(--fonte-display);font-size:1.5rem;font-weight:300;color:var(--branco);}
+    .secao-titulo em{font-style:italic;color:var(--dourado);}
+
+    /* Tabela de agendamentos */
+    .tabela-wrap{border:1px solid var(--preto-borda);overflow:hidden;}
+    .tabela{width:100%;border-collapse:collapse;}
+    .tabela th{background:var(--preto-card);padding:.9rem 1.2rem;font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cinza);text-align:left;border-bottom:1px solid var(--preto-borda);}
+    .tabela td{padding:1rem 1.2rem;font-size:.82rem;color:var(--cinza-claro);border-bottom:1px solid var(--preto-borda);vertical-align:middle;}
+    .tabela tr:last-child td{border-bottom:none;}
+    .tabela tr:hover td{background:rgba(255,255,255,.02);}
+    .tabela .cliente-nome{font-weight:500;color:var(--branco);}
+    .tabela .preco{font-family:var(--fonte-display);font-size:1rem;color:var(--dourado);}
+    .tabela-acoes{display:flex;gap:.5rem;align-items:center;}
+
+    /* ── PAINEL: PROFISSIONAIS ── */
+    .prof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+    .prof-card{background:var(--preto-card);border:1px solid var(--preto-borda);padding:2rem;position:relative;overflow:hidden;transition:border-color .3s;}
+    .prof-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--dourado),transparent);}
+    .prof-card:hover{border-color:rgba(201,168,76,.3);}
+    .prof-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;}
+    .prof-avatar i{color:var(--dourado);font-size:1.3rem;}
+    .prof-num{font-size:.62rem;letter-spacing:.2em;color:var(--dourado);margin-bottom:.3rem;}
+    .prof-nome{font-family:var(--fonte-display);font-size:1.3rem;font-weight:400;color:var(--branco);margin-bottom:.2rem;}
+    .prof-esp{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--cinza);}
+    .prof-stats{display:flex;gap:1.5rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--preto-borda);}
+    .prof-stat{text-align:center;}
+    .prof-stat-num{font-family:var(--fonte-display);font-size:1.4rem;font-weight:600;color:var(--dourado);line-height:1;}
+    .prof-stat-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);}
+    .prof-status{display:inline-flex;align-items:center;gap:.3rem;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-top:.8rem;padding:.25rem .6rem;}
+    .prof-status.ativo{color:var(--verde);background:rgba(76,175,125,.08);border:1px solid rgba(76,175,125,.3);}
+    .prof-card-acoes{display:flex;gap:.5rem;margin-top:1rem;}
+
+    /* ── PAINEL: SERVIÇOS ── */
+    .servicos-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--preto-borda);border:1px solid var(--preto-borda);}
+    .servico-card-admin{background:var(--preto-card);padding:1.8rem 2rem;position:relative;overflow:hidden;transition:background .3s;}
+    .servico-card-admin:hover{background:#141414;}
+    .servico-card-admin::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--dourado),transparent);}
+    .serv-num{font-family:var(--fonte-display);font-size:2.5rem;font-weight:700;color:rgba(201,168,76,.12);line-height:1;margin-bottom:.8rem;}
+    .serv-nome{font-size:.82rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--branco);margin-bottom:.4rem;}
+    .serv-desc{font-size:.8rem;font-weight:300;color:var(--cinza);line-height:1.6;margin-bottom:1.2rem;}
+    .serv-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--preto-borda);padding-top:1rem;}
+    .serv-preco{font-family:var(--fonte-display);font-size:1.5rem;font-weight:600;color:var(--dourado);}
+    .serv-dur{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);}
+    .serv-acoes{display:flex;gap:.5rem;}
+
+    /* ── PAINEL: RELATÓRIOS ── */
+    .relatorio-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2rem;margin-bottom:2rem;}
+    .relatorio-box{background:var(--preto-card);border:1px solid var(--preto-borda);padding:2rem;position:relative;overflow:hidden;}
+    .relatorio-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--dourado),transparent);}
+    .rel-titulo{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dourado);margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem;}
+    .rel-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--preto-borda);}
+    .rel-item:last-child{border-bottom:none;}
+    .rel-chave{font-size:.8rem;color:var(--cinza);}
+    .rel-valor{font-size:.85rem;font-weight:500;color:var(--branco);}
+    .rel-valor.dourado{font-family:var(--fonte-display);font-size:1.1rem;color:var(--dourado);}
+    .rel-valor.verde{color:var(--verde);}
+
+    /* Botões gerais */
+    .btn-primario{font-family:var(--fonte-body);font-size:.72rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--preto);background:var(--dourado);border:none;padding:.7rem 1.5rem;cursor:pointer;transition:background .3s;display:inline-flex;align-items:center;gap:.5rem;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+    .btn-primario:hover{background:var(--dourado-claro);}
+    .btn-secundario{font-family:var(--fonte-body);font-size:.7rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);background:none;border:1px solid var(--preto-borda);padding:.6rem 1.2rem;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:.4rem;}
+    .btn-secundario:hover{border-color:var(--cinza);color:var(--branco);}
+
+    /* Modal foto de referência */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+    .modal-overlay.visivel{display:flex;}
+    .modal-foto{background:var(--preto-card);border:1px solid var(--preto-borda);padding:2rem;max-width:500px;width:90%;position:relative;animation:fadeIn .3s ease;}
+    .modal-foto::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--dourado),transparent);}
+    .modal-foto-titulo{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dourado);margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;}
+    .modal-foto img{width:100%;max-height:350px;object-fit:cover;border:1px solid var(--preto-borda);}
+    .modal-foto-vazia{text-align:center;padding:3rem;color:var(--cinza);font-size:.85rem;}
+    .modal-foto-vazia i{display:block;font-size:2rem;color:rgba(201,168,76,.2);margin-bottom:1rem;}
+    .btn-fechar-modal{background:none;border:1px solid var(--preto-borda);color:var(--cinza);padding:.3rem .7rem;cursor:pointer;font-family:var(--fonte-body);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;transition:all .3s;}
+    .btn-fechar-modal:hover{border-color:var(--cinza);color:var(--branco);}
+
+    /* Loading */
+    .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem;gap:1rem;}
+    .loading i{color:var(--dourado);font-size:1.5rem;animation:spin 1s linear infinite;}
+    .loading p{font-size:.82rem;color:var(--cinza);}    
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Vazio */
+    .vazio{text-align:center;padding:3rem;background:var(--preto-card);}
+    .vazio i{font-size:2rem;color:rgba(201,168,76,.15);margin-bottom:1rem;display:block;}
+    .vazio p{font-size:.85rem;color:var(--cinza);}
+
+    /* ── RESPONSIVO ── */
+    @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.dash-grid{grid-template-columns:1fr;}.prof-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:900px){.sidebar{transform:translateX(-100%);transition:transform .3s;}.main{margin-left:0;width:100%;}.servicos-grid{grid-template-columns:1fr;}.relatorio-grid{grid-template-columns:1fr;}.prof-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="../index.html" class="sidebar-logo">
+      <i class="fa-solid fa-scissors"></i>JL <span>Barbearia</span>
+    </a>
+    <div class="sidebar-perfil">
+      <div class="sidebar-avatar"><i class="fa-solid fa-scissors"></i></div>
+      <div class="sidebar-nome">Administrador</div>
+      <div class="sidebar-tipo">Admin</div>
+    </div>
+    <nav class="sidebar-menu">
+      <div class="menu-label">Painel</div>
+      <button class="menu-item ativo" onclick="mostrarPainel('dashboard')">
+        <i class="fa-solid fa-chart-line"></i>Dashboard
+      </button>
+      <button class="menu-item" onclick="mostrarPainel('agendamentos')">
+        <i class="fa-solid fa-calendar-days"></i>Agendamentos
+        <span class="menu-badge" id="badge-pend">0</span>
+      </button>
+      <div class="menu-label">Gestão</div>
+      <button class="menu-item" onclick="mostrarPainel('profissionais')">
+        <i class="fa-solid fa-users"></i>Profissionais
+      </button>
+      <button class="menu-item" onclick="mostrarPainel('servicos')">
+        <i class="fa-solid fa-scissors"></i>Serviços
+      </button>
+      <div class="menu-label">Análise</div>
+      <button class="menu-item" onclick="mostrarPainel('relatorios')">
+        <i class="fa-solid fa-chart-bar"></i>Relatórios
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="sair()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar" id="topbar">
+      <div class="topbar-esq">
+        <div class="topbar-titulo">Painel <span>Administrativo</span></div>
+        <div class="topbar-data" id="topbar-data"></div>
+      </div>
+      <div class="topbar-dir">
+        <div class="topbar-badge"><i class="fa-solid fa-circle"></i> Sistema online</div>
+      </div>
+    </div>
+
+    <div class="conteudo">
+
+      <!-- ══ PAINEL: DASHBOARD ══ -->
+      <div class="painel ativo" id="painel-dashboard">
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card" style="--cor:var(--dourado)">
+            <div class="kpi-top">
+              <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
+              <span class="kpi-variacao pos">+12%</span>
+            </div>
+            <div class="kpi-num" id="kpi-hoje">8</div>
+            <div class="kpi-label">Agendamentos hoje</div>
+          </div>
+          <div class="kpi-card" style="--cor:var(--verde)">
+            <div class="kpi-top">
+              <div class="kpi-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <span class="kpi-variacao pos">+8%</span>
+            </div>
+            <div class="kpi-num" id="kpi-fat">R$ 420</div>
+            <div class="kpi-label">Faturamento hoje</div>
+          </div>
+          <div class="kpi-card" style="--cor:var(--amarelo)">
+            <div class="kpi-top">
+              <div class="kpi-icon"><i class="fa-solid fa-clock"></i></div>
+              <span class="kpi-variacao neg">-2</span>
+            </div>
+            <div class="kpi-num" id="kpi-pend">3</div>
+            <div class="kpi-label">Pendentes confirmação</div>
+          </div>
+          <div class="kpi-card" style="--cor:var(--azul)">
+            <div class="kpi-top">
+              <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+              <span class="kpi-variacao pos">+5</span>
+            </div>
+            <div class="kpi-num">24</div>
+            <div class="kpi-label">Clientes este mês</div>
+          </div>
+        </div>
+
+        <!-- Grid principal -->
+        <div class="dash-grid">
+
+          <!-- Agenda do dia -->
+          <div class="agenda-box">
+            <div class="box-header">
+              <span class="box-titulo"><i class="fa-solid fa-calendar-day" style="margin-right:.5rem;"></i>Agenda de Hoje</span>
+              <button class="box-acao" onclick="mostrarPainel('agendamentos')">
+                Ver todos <i class="fa-solid fa-arrow-right" style="font-size:.6rem;"></i>
+              </button>
+            </div>
+            <div id="agenda-hoje-lista">
+              <div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div>
+            </div>
+          </div>
+
+          <!-- Coluna direita -->
+          <div class="col-dir">
+
+            <!-- Faturamento -->
+            <div class="fat-box">
+              <div class="box-header">
+                <span class="box-titulo"><i class="fa-solid fa-chart-line" style="margin-right:.5rem;"></i>Faturamento</span>
+              </div>
+              <div class="fat-valor" id="fat-hoje">R$ 420</div>
+              <div class="fat-label">Hoje · 8 atendimentos</div>
+              <div style="padding:0 2rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;border-top:1px solid var(--preto-borda);margin-top:.5rem;padding-top:1rem;">
+                <div>
+                  <div style="font-size:1.3rem;font-family:var(--fonte-display);font-weight:600;color:var(--branco);">R$ 2.840</div>
+                  <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);">Esta semana</div>
+                </div>
+                <div>
+                  <div style="font-size:1.3rem;font-family:var(--fonte-display);font-weight:600;color:var(--branco);">R$ 11.200</div>
+                  <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);">Este mês</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Serviços mais procurados -->
+            <div class="agenda-box">
+              <div class="box-header">
+                <span class="box-titulo"><i class="fa-solid fa-star" style="margin-right:.5rem;"></i>Mais Procurados</span>
+              </div>
+              <div class="servico-bar">
+                <span class="servico-bar-nome">Corte + Barba</span>
+                <div class="servico-bar-track"><div class="servico-bar-fill" style="width:90%"></div></div>
+                <span class="servico-bar-count">38</span>
+              </div>
+              <div class="servico-bar">
+                <span class="servico-bar-nome">Corte Masculino</span>
+                <div class="servico-bar-track"><div class="servico-bar-fill" style="width:70%"></div></div>
+                <span class="servico-bar-count">29</span>
+              </div>
+              <div class="servico-bar">
+                <span class="servico-bar-nome">Barba</span>
+                <div class="servico-bar-track"><div class="servico-bar-fill" style="width:45%"></div></div>
+                <span class="servico-bar-count">19</span>
+              </div>
+              <div class="servico-bar">
+                <span class="servico-bar-nome">Sobrancelha</span>
+                <div class="servico-bar-track"><div class="servico-bar-fill" style="width:25%"></div></div>
+                <span class="servico-bar-count">10</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: AGENDAMENTOS ══ -->
+      <div class="painel" id="painel-agendamentos">
+        <div class="secao-header">
+          <h2 class="secao-titulo">Todos os <em>Agendamentos</em></h2>
+        </div>
+        <div class="filtros">
+          <button class="filtro-btn ativo" onclick="filtrarTabela('todos',this)">Todos</button>
+          <button class="filtro-btn" onclick="filtrarTabela('pendente',this)">Pendentes</button>
+          <button class="filtro-btn" onclick="filtrarTabela('confirmado',this)">Confirmados</button>
+          <button class="filtro-btn" onclick="filtrarTabela('concluido',this)">Concluídos</button>
+          <button class="filtro-btn" onclick="filtrarTabela('cancelado',this)">Cancelados</button>
+        </div>
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Data / Hora</th>
+                <th>Cliente</th>
+                <th>Serviço</th>
+                <th>Profissional</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-body">
+              <tr><td colspan="7"><div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: PROFISSIONAIS ══ -->
+      <div class="painel" id="painel-profissionais">
+        <div class="secao-header">
+          <h2 class="secao-titulo">Nossa <em>Equipe</em></h2>
+        </div>
+        <div class="prof-grid" id="prof-grid">
+          <div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: SERVIÇOS ══ -->
+      <div class="painel" id="painel-servicos">
+        <div class="secao-header">
+          <h2 class="secao-titulo">Nossos <em>Serviços</em></h2>
+        </div>
+        <div class="servicos-grid" id="servicos-grid">
+          <div class="loading"><i class="fa-solid fa-spinner"></i><p>Carregando...</p></div>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: RELATÓRIOS ══ -->
+      <div class="painel" id="painel-relatorios">
+        <div class="secao-header">
+          <h2 class="secao-titulo"><em>Relatórios</em> do Sistema</h2>
+        </div>
+        <div class="relatorio-grid">
+          <div class="relatorio-box">
+            <div class="rel-titulo"><i class="fa-solid fa-calendar"></i>Agendamentos — Junho 2026</div>
+            <div class="rel-item"><span class="rel-chave">Total de agendamentos</span><span class="rel-valor">96</span></div>
+            <div class="rel-item"><span class="rel-chave">Confirmados</span><span class="rel-valor verde">71</span></div>
+            <div class="rel-item"><span class="rel-chave">Cancelados</span><span class="rel-valor" style="color:var(--vermelho)">8</span></div>
+            <div class="rel-item"><span class="rel-chave">Pendentes</span><span class="rel-valor" style="color:var(--amarelo)">17</span></div>
+            <div class="rel-item"><span class="rel-chave">Taxa de conclusão</span><span class="rel-valor verde">74%</span></div>
+          </div>
+          <div class="relatorio-box">
+            <div class="rel-titulo"><i class="fa-solid fa-money-bill-wave"></i>Faturamento — Junho 2026</div>
+            <div class="rel-item"><span class="rel-chave">Faturamento total</span><span class="rel-valor dourado">R$ 11.200</span></div>
+            <div class="rel-item"><span class="rel-chave">Ticket médio</span><span class="rel-valor">R$ 58,33</span></div>
+            <div class="rel-item"><span class="rel-chave">Serviço mais rentável</span><span class="rel-valor">Corte + Barba</span></div>
+            <div class="rel-item"><span class="rel-chave">Melhor dia</span><span class="rel-valor">Sábado</span></div>
+            <div class="rel-item"><span class="rel-chave">Comparativo maio</span><span class="rel-valor verde">+18%</span></div>
+          </div>
+          <div class="relatorio-box">
+            <div class="rel-titulo"><i class="fa-solid fa-users"></i>Clientes — Junho 2026</div>
+            <div class="rel-item"><span class="rel-chave">Novos clientes</span><span class="rel-valor">24</span></div>
+            <div class="rel-item"><span class="rel-chave">Clientes recorrentes</span><span class="rel-valor">72</span></div>
+            <div class="rel-item"><span class="rel-chave">Total de clientes</span><span class="rel-valor">96</span></div>
+            <div class="rel-item"><span class="rel-chave">Taxa de retorno</span><span class="rel-valor verde">75%</span></div>
+          </div>
+          <div class="relatorio-box">
+            <div class="rel-titulo"><i class="fa-solid fa-star"></i>Serviços Mais Solicitados</div>
+            <div class="rel-item"><span class="rel-chave">1º Corte + Barba</span><span class="rel-valor dourado">38 vez.</span></div>
+            <div class="rel-item"><span class="rel-chave">2º Corte Masculino</span><span class="rel-valor">29 vez.</span></div>
+            <div class="rel-item"><span class="rel-chave">3º Barba</span><span class="rel-valor">19 vez.</span></div>
+            <div class="rel-item"><span class="rel-chave">4º Sobrancelha</span><span class="rel-valor">10 vez.</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal foto de referência -->
+  <div class="modal-overlay" id="modal-foto">
+    <div class="modal-foto">
+      <div class="modal-foto-titulo">
+        <span><i class="fa-solid fa-image" style="margin-right:.5rem;"></i>Foto de Referência do Cliente</span>
+        <button class="btn-fechar-modal" onclick="fecharModalFoto()">Fechar</button>
+      </div>
+      <div id="modal-foto-conteudo">
+        <div class="modal-foto-vazia">
+          <i class="fa-solid fa-image"></i>
+          Nenhuma foto de referência enviada.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Dados mockados ──────────────────────────
+    const AGENDAMENTOS = [
+      { id:'1', cliente:'Carlos Oliveira', servico:'Corte + Barba',   prof:'Norberto Junior', data:'2026-06-08', horario:'09:00', preco:70, status:'confirmado', foto:null },
+      { id:'2', cliente:'Rafael Souza',    servico:'Corte Masculino', prof:'Lucas Dias',       data:'2026-06-08', horario:'10:00', preco:45, status:'pendente',   foto:null },
+      { id:'3', cliente:'Diego Lima',      servico:'Barba',           prof:'Jorge Sampaio',    data:'2026-06-08', horario:'11:00', preco:35, status:'pendente',   foto:null },
+      { id:'4', cliente:'Bruno Martins',   servico:'Corte Masculino', prof:'Norberto Junior',  data:'2026-06-08', horario:'14:00', preco:45, status:'concluido',  foto:null },
+      { id:'5', cliente:'Thiago Costa',    servico:'Sobrancelha',     prof:'Lucas Dias',       data:'2026-06-08', horario:'15:30', preco:25, status:'confirmado', foto:null },
+      { id:'6', cliente:'João Santos',     servico:'Corte + Barba',   prof:'Jorge Sampaio',    data:'2026-06-07', horario:'09:30', preco:70, status:'concluido',  foto:null },
+      { id:'7', cliente:'Pedro Alves',     servico:'Corte Masculino', prof:'Norberto Junior',  data:'2026-06-07', horario:'11:00', preco:45, status:'cancelado',  foto:null },
+    ];
+
+    const PROFISSIONAIS = [
+      { id:'1', nome:'Norberto Junior', esp:'Especialista em Cortes',  atend:38, avaliacao:'4.9' },
+      { id:'2', nome:'Lucas Dias',      esp:'Especialista em Barba',   atend:29, avaliacao:'4.8' },
+      { id:'3', nome:'Jorge Sampaio',   esp:'Design e Acabamento',     atend:29, avaliacao:'4.7' },
+    ];
+
+    const SERVICOS = [
+      { id:'1', nome:'Corte Masculino', desc:'Acabamento fino, modelagem personalizada e estilo autêntico.',     preco:45, dur:'30 min' },
+      { id:'2', nome:'Barba',           desc:'Desenho preciso com produtos premium para visual elegante.',        preco:35, dur:'25 min' },
+      { id:'3', nome:'Corte + Barba',   desc:'Pacote completo com corte moderno e barba desenhada com perfeição.',preco:70, dur:'50 min' },
+      { id:'4', nome:'Sobrancelha',     desc:'Design de sobrancelhas que valoriza seu rosto com naturalidade.',   preco:25, dur:'15 min' },
+    ];
+
+    const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const DIAS  = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+    // ── Init ────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      // Data atual na topbar
+      const agora = new Date();
+      document.getElementById('topbar-data').textContent =
+        `${DIAS[agora.getDay()]}, ${agora.getDate()} de ${['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][agora.getMonth()]} de ${agora.getFullYear()}`;
+
+      // Badge pendentes
+      const pend = AGENDAMENTOS.filter(a=>a.status==='pendente').length;
+      document.getElementById('badge-pend').textContent = pend;
+
+      carregarDashboard();
+    });
+
+    // ── Dashboard ───────────────────────────────
+    function carregarDashboard() {
+      const hoje = AGENDAMENTOS.filter(a => a.data === '2026-06-08')
+        .sort((a,b) => a.horario.localeCompare(b.horario));
+
+      const lista = document.getElementById('agenda-hoje-lista');
+      if (!hoje.length) {
+        lista.innerHTML = `<div class="vazio"><i class="fa-solid fa-calendar-xmark"></i><p>Nenhum agendamento para hoje.</p></div>`;
+        return;
+      }
+      lista.innerHTML = hoje.map(ag => `
+        <div class="agenda-item">
+          <div class="agenda-hora">${ag.horario}<small>hrs</small></div>
+          <div class="agenda-info">
+            <div class="agenda-cliente">${ag.cliente}</div>
+            <div class="agenda-servico">
+              <i class="fa-solid fa-scissors"></i>${ag.servico}
+              <i class="fa-solid fa-user"></i>${ag.prof}
+              <i class="fa-solid fa-money-bill-wave"></i>R$ ${ag.preco}
+            </div>
+          </div>
+          <div class="agenda-acoes">
+            <span class="status-badge status-${ag.status}">${traduzir(ag.status)}</span>
+            <div class="agenda-btns">
+              ${ag.status==='pendente' ? `
+                <button class="btn-confirmar" onclick="confirmarAg('${ag.id}')"><i class="fa-solid fa-check"></i></button>
+                <button class="btn-recusar"   onclick="cancelarAg('${ag.id}')"><i class="fa-solid fa-xmark"></i></button>
+              ` : ''}
+              <button class="btn-ver-foto" onclick="verFoto('${ag.id}')">
+                <i class="fa-solid fa-image"></i>Ref.
+              </button>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── Tabela de agendamentos ──────────────────
+    function renderizarTabela(lista) {
+      const body = document.getElementById('tabela-body');
+      if (!lista.length) {
+        body.innerHTML = `<tr><td colspan="7"><div class="vazio"><i class="fa-solid fa-calendar-xmark"></i><p>Nenhum agendamento encontrado.</p></div></td></tr>`;
+        return;
+      }
+      body.innerHTML = lista.map(ag => {
+        const [,m,d] = ag.data.split('-');
+        return `<tr>
+          <td>${d}/${m} · ${ag.horario}</td>
+          <td><span class="cliente-nome">${ag.cliente}</span></td>
+          <td>${ag.servico}</td>
+          <td>${ag.prof}</td>
+          <td><span class="preco">R$ ${ag.preco}</span></td>
+          <td><span class="status-badge status-${ag.status}">${traduzir(ag.status)}</span></td>
+          <td>
+            <div class="tabela-acoes">
+              ${ag.status==='pendente' ? `
+                <button class="btn-confirmar" onclick="confirmarAg('${ag.id}')"><i class="fa-solid fa-check"></i> Confirmar</button>
+                <button class="btn-recusar"   onclick="cancelarAg('${ag.id}')"><i class="fa-solid fa-xmark"></i></button>
+              ` : ''}
+              <button class="btn-ver-foto" onclick="verFoto('${ag.id}')"><i class="fa-solid fa-image"></i></button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filtrarTabela(filtro, btn) {
+      document.querySelectorAll('.filtros .filtro-btn').forEach(b=>b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+      const lista = filtro==='todos' ? AGENDAMENTOS : AGENDAMENTOS.filter(a=>a.status===filtro);
+      renderizarTabela(lista);
+    }
+
+    // ── Profissionais ───────────────────────────
+    function renderizarProfissionais() {
+      document.getElementById('prof-grid').innerHTML = PROFISSIONAIS.map((p,i) => `
+        <div class="prof-card">
+          <div class="prof-avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="prof-num">0${i+1} —</div>
+          <div class="prof-nome">${p.nome}</div>
+          <div class="prof-esp">${p.esp}</div>
+          <span class="prof-status ativo"><i class="fa-solid fa-circle" style="font-size:.4rem;"></i> Ativo</span>
+          <div class="prof-stats">
+            <div class="prof-stat">
+              <div class="prof-stat-num">${p.atend}</div>
+              <div class="prof-stat-label">Atend.</div>
+            </div>
+            <div class="prof-stat">
+              <div class="prof-stat-num">${p.avaliacao}</div>
+              <div class="prof-stat-label">Avaliação</div>
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── Serviços ────────────────────────────────
+    function renderizarServicos() {
+      document.getElementById('servicos-grid').innerHTML = SERVICOS.map((s,i) => `
+        <div class="servico-card-admin">
+          <div class="serv-num">0${i+1}</div>
+          <div class="serv-nome">${s.nome}</div>
+          <div class="serv-desc">${s.desc}</div>
+          <div class="serv-footer">
+            <span class="serv-preco">R$ ${s.preco}</span>
+            <span class="serv-dur">${s.dur}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── Ações de agendamento ────────────────────
+    function confirmarAg(id) {
+      const ag = AGENDAMENTOS.find(a=>a.id===id);
+      if (ag) { ag.status='confirmado'; recarregar(); }
+    }
+    function cancelarAg(id) {
+      if (!confirm('Cancelar este agendamento?')) return;
+      const ag = AGENDAMENTOS.find(a=>a.id===id);
+      if (ag) { ag.status='cancelado'; recarregar(); }
+    }
+    function recarregar() {
+      carregarDashboard();
+      renderizarTabela(AGENDAMENTOS);
+      document.getElementById('badge-pend').textContent = AGENDAMENTOS.filter(a=>a.status==='pendente').length;
+    }
+
+    // ── Modal foto ──────────────────────────────
+    function verFoto(id) {
+      const ag = AGENDAMENTOS.find(a=>a.id===id);
+      const conteudo = document.getElementById('modal-foto-conteudo');
+      if (ag?.foto) {
+        conteudo.innerHTML = `<img src="${ag.foto}" alt="Foto de referência" />`;
+      } else {
+        conteudo.innerHTML = `<div class="modal-foto-vazia"><i class="fa-solid fa-image"></i>Nenhuma foto de referência enviada para este agendamento.</div>`;
+      }
+      document.getElementById('modal-foto').classList.add('visivel');
+    }
+    function fecharModalFoto() { document.getElementById('modal-foto').classList.remove('visivel'); }
+
+    // ── Navegação painéis ───────────────────────
+    function mostrarPainel(id) {
+      document.querySelectorAll('.painel').forEach(p=>p.classList.remove('ativo'));
+      document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('ativo'));
+      document.getElementById(`painel-${id}`).classList.add('ativo');
+
+      if (id==='agendamentos')  renderizarTabela(AGENDAMENTOS);
+      if (id==='profissionais') renderizarProfissionais();
+      if (id==='servicos')      renderizarServicos();
+    }
+
+    // ── Topbar scroll ───────────────────────────
+    let ultimoScroll = 0;
+    const topbar = document.getElementById('topbar');
+    window.addEventListener('scroll', () => {
+      const atual = window.scrollY;
+      topbar.style.transform = (atual > ultimoScroll && atual > 60) ? 'translateY(-100%)' : 'translateY(0)';
+      ultimoScroll = atual;
+    }, { passive: true });
+
+    // ── Sair ───────────────────────────────────
+    function sair() {
+      ['jl_token','jl_perfil','jl_nome'].forEach(k=>localStorage.removeItem(k));
+      window.location.href = '../login.html';
+    }
+
+    // Fecha modal ao clicar fora
+    document.getElementById('modal-foto').addEventListener('click', function(e) {
+      if (e.target===this) fecharModalFoto();
+    });
+
+    traduzir = s => ({pendente:'Pendente',confirmado:'Confirmado',concluido:'Concluído',cancelado:'Cancelado'}[s]||s);
+  </script>
+</body>
+</html>
